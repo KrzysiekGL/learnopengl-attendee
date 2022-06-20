@@ -10,7 +10,14 @@ project(app VERSION 1.0)
 file(GLOB_RECURSE APP_SRCS src/*.cpp)
 add_executable(app ${APP_SRCS})
 
-# Setup OpenGL
-target_include_directories(app PUBLIC ${GL_INCLUDE_DIRS})
-target_link_libraries(app PUBLIC GL)
+# Setup GLFW and OpenGL
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(lib/glfw)
+target_link_libraries(app glfw)
+
+find_package(OpenGL REQUIRED)
+target_link_libraries(app OpenGL::GL)
 
