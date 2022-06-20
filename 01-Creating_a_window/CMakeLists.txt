@@ -7,22 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(app VERSION 1.0)
 
 # `app` sources
-file(GLOB_RECURSE APP_SRCS targets/app/*.cpp)
+file(GLOB_RECURSE APP_SRCS src/*.cpp)
 add_executable(app ${APP_SRCS})
-
-# Setup `example-lib` library
-add_subdirectory(libs/example-lib)
-target_include_directories(app PUBLIC ${EXLIB_INCLUDE_DIR})
-target_link_libraries(app PUBLIC exlib)
 
 # Setup OpenGL
 target_include_directories(app PUBLIC ${GL_INCLUDE_DIRS})
 target_link_libraries(app PUBLIC GL)
-
-# Setup Catch2 along with tests
-add_subdirectory(libs/Catch2)
-add_executable(tests targets/tests/wnd-size.cpp)
-target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
-target_include_directories(tests PRIVATE ${EXLIB_INCLUDE_DIR})
-target_link_libraries(tests PRIVATE exlib)
 
