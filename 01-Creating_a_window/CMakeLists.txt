@@ -21,3 +21,8 @@ target_link_libraries(app glfw)
 find_package(OpenGL REQUIRED)
 target_link_libraries(app OpenGL::GL)
 
+# Setup GLAD
+add_subdirectory(lib/glad/cmake glad_cmake)
+glad_add_library(glad_gl_core_mx_33 STATIC MX API gl:core=3.3)
+target_link_libraries(app glad_gl_core_mx_33)
+
