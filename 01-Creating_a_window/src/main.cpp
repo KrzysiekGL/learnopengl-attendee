@@ -17,6 +17,18 @@
 
 #include <GLFW/glfw3.h>
 
+#define WIDTH 800
+#define HEIGHT 600
+
+void framebufferSizeCallback(GLFWwindow * window, int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow * window) {
+	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
 int main(int argc, char ** argv, char ** eval) {
 	std::cout << "01-Creating_a_window\n";
 
@@ -30,7 +42,7 @@ int main(int argc, char ** argv, char ** eval) {
 	glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
 
 	// GLFW window creation
-	GLFWwindow * window = glfwCreateWindow(800, 600, "learnopengl", NULL, NULL);
+	GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, "learnopengl", NULL, NULL);
 	if(window == NULL) {
 		std::cout << "Failed to create GLFW window\n";
 		glfwTerminate();
@@ -39,11 +51,33 @@ int main(int argc, char ** argv, char ** eval) {
 	glfwMakeContextCurrent(window);
 
 	// Map to the OpenGL function pointers with GLAD
-  if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-		std::cout << "Failed to initialize OpenGL context" << std::endl;
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "Failed to initialize OpenGL context (GLAD)\n";
 		return -1;
 	}
 
+	// GLFW callbacks
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
+	// OpenGL state machine settings
+	glViewport(0, 0, WIDTH, HEIGHT);
+	glClearColor(.2f, .3f, .3f, 1.f);
+
+	// Game loop/Render loop
+	while(!glfwWindowShouldClose(window)) {
+		// Input
+		processInput(window);
+
+		// Rendering
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Events & Swap buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	// Clean-up
+	glfwTerminate();
 	return 0;
 }
 
