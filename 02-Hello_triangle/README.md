@@ -1,3 +1,2 @@
-# Getting started
-OpenGL context (window) creation with GLFW.
-Also, other libraries required to run the windowed app using OpenGL.
+# Hello trinagle
+First introduction of the rendering pipeline along with an example.
