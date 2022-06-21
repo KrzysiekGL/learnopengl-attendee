@@ -1,6 +1,3 @@
 [submodule "01-Creating_a_window/lib/glfw"]
 	path = 01-Creating_a_window/lib/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "01-Creating_a_window/lib/glad"]
-	path = 01-Creating_a_window/lib/glad
-	url = https://github.com/Dav1dde/glad.git

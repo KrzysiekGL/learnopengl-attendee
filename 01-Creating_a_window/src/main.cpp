@@ -53,6 +53,7 @@ int main(int argc, char ** argv, char ** eval) {
 	// Map to the OpenGL function pointers with GLAD
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize OpenGL context (GLAD)\n";
+		glfwTerminate();
 		return -1;
 	}
 
@@ -60,7 +61,7 @@ int main(int argc, char ** argv, char ** eval) {
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
 	// OpenGL state machine settings
-	glViewport(0, 0, WIDTH, HEIGHT);
+	framebufferSizeCallback(window, WIDTH, HEIGHT);
 	glClearColor(.2f, .3f, .3f, 1.f);
 
 	// Game loop/Render loop
