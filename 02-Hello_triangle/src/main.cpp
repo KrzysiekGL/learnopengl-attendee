@@ -78,8 +78,13 @@ int main(int argc, char ** argv, char ** eval) {
 	glClearColor(.2f, .3f, .3f, 1.f);
 
 	// Temp space for rendering stuff
+	// Vertex Array Object - a buffer to store data about VBO and it's corresponding Attributes.
+	// It doesn't link or store connection to a shader program.
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 	// Vertex Buffer Object - a trinagle made of three vertecies
-	unsigned int VBO;
+	GLuint VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -153,6 +158,7 @@ int main(int argc, char ** argv, char ** eval) {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 	// End of temp space for rendering stuff
 
 	// Game loop/Render loop
@@ -162,6 +168,11 @@ int main(int argc, char ** argv, char ** eval) {
 
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
 
 		// Events & Swap buffers
 		glfwSwapBuffers(window);
