@@ -149,7 +149,10 @@ int main(int argc, char ** argv, char ** eval) {
 	glUseProgram(shaderProgram);
 
 	// Linking Vertex Attributes
-	
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// End of temp space for rendering stuff
 
 	// Game loop/Render loop
