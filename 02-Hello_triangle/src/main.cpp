@@ -16,9 +16,15 @@
 #define HEIGHT 600
 
 const float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-   0.5f, -0.5f, 0.0f,
-	 0.0f,	0.5f, 0.0f
+	.5, .5, .0,
+	.5, -.5, .0,
+	-.5, -.5, .0,
+	-.5, .5, .0,
+};
+
+const GLuint indices[] = {
+	0, 1, 3,
+	1, 2, 3
 };
 
 const char * vertexSahderSource = "#version 330 core\n"
@@ -77,18 +83,39 @@ int main(int argc, char ** argv, char ** eval) {
 	framebufferSizeCallback(window, WIDTH, HEIGHT);
 	glClearColor(.2f, .3f, .3f, 1.f);
 
+	// -----------------------------------------------------------------------------------------------
 	// Temp space for rendering stuff
 	// Vertex Array Object - a buffer to store data about VBO and it's corresponding Attributes.
 	// It doesn't link or store connection to a shader program.
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	// Vertex Buffer Object - a trinagle made of three vertecies
+
+	// Vertex Buffer Object - a rectangle made of 4 vertices
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// Element Buffer Object - combination of the VBO vertices to form a rectangle
+	GLuint EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// Linking Vertex Attributes
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+	// Bind to default buffers (VAO (!*), VBO, EBO)
+	// *VAO keeps track of the last bound EBO while the VAO is bound.
+	// So if the default EBO was bound before default VAO, then the
+	// VAO would keep track of the default EBO, which is 0
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// -----------------------------------------------------------------------------------------------
 
 	// Vertex shader
 	unsigned int vertexShader;
@@ -153,13 +180,8 @@ int main(int argc, char ** argv, char ** eval) {
 	glDeleteShader(fragmentShader);
 	glUseProgram(shaderProgram);
 
-	// Linking Vertex Attributes
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 	// End of temp space for rendering stuff
+	// -----------------------------------------------------------------------------------------------
 
 	// Game loop/Render loop
 	while(!glfwWindowShouldClose(window)) {
@@ -171,7 +193,7 @@ int main(int argc, char ** argv, char ** eval) {
 
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		// Events & Swap buffers
