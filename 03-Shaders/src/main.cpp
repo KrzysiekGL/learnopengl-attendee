@@ -76,6 +76,13 @@ int main(int argc, char ** argv, char ** eval) {
 		return -1;
 	}
 
+	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
+	{
+		int numAttribs;
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttribs);
+		std::cout << "Maximum number of attributes supported: " << numAttribs << "\n";
+	}
+
 	// GLFW callbacks
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
