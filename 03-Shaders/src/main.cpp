@@ -29,14 +29,17 @@ const GLuint indices[] = {
 
 const char * vertexSahderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos\n;"
+	"out vec4 vertexColor;\n"
 	"void main() {\n"
 	"	gl_Position = vec4(aPos, 1.f);\n"
+	"	vertexColor = vec4(.5, .0, .0, 1.);\n"
 	"}\n";
 
 const char * fragmentShaderSource = "#version 330 core\n"
+	"in vec4 vertexColor;\n"
 	"out vec4 fragColor;\n"
 	"void main() {\n"
-	"	fragColor = vec4(1.f, .5f, .2f, 1.f);\n"
+	"	fragColor = vertexColor;\n"
 	"}\n";
 
 void framebufferSizeCallback(GLFWwindow * window, int width, int height) {
