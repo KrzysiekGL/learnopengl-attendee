@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <math.h>
 
 // Include GLAD before GLFW
 #include <glad/glad.h>
@@ -29,17 +30,15 @@ const GLuint indices[] = {
 
 const char * vertexSahderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos\n;"
-	"out vec4 vertexColor;\n"
 	"void main() {\n"
 	"	gl_Position = vec4(aPos, 1.f);\n"
-	"	vertexColor = vec4(.5, .0, .0, 1.);\n"
 	"}\n";
 
 const char * fragmentShaderSource = "#version 330 core\n"
-	"in vec4 vertexColor;\n"
 	"out vec4 fragColor;\n"
+	"uniform vec4 ourColor;\n"
 	"void main() {\n"
-	"	fragColor = vertexColor;\n"
+	"	fragColor = ourColor;\n"
 	"}\n";
 
 void framebufferSizeCallback(GLFWwindow * window, int width, int height) {
@@ -185,6 +184,15 @@ int main(int argc, char ** argv, char ** eval) {
 		}
 	}
 
+	// Uniforms
+	float timeValue = glfwGetTime();
+	float greenValue = (sin(timeValue) / 2.f) + .5f;
+	int uniformOurColor = glGetUniformLocation(shaderProgram, "ourColor");
+	std::cout << "ourColor location: " << uniformOurColor << "\n";
+	glUseProgram(shaderProgram);
+	glUniform4f(uniformOurColor, 0.f, greenValue, 0.f, 1.f);
+	glUseProgram(0);
+
 	// Setup OpneGL to use the shader program and clean-up unneccesary now shader objects
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -199,12 +207,22 @@ int main(int argc, char ** argv, char ** eval) {
 		processInput(window);
 
 		// Rendering
+
+		//Clrear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// Chagne uniform value
+		greenValue = (sin(glfwGetTime())/2.f)+.5f;
+		glUseProgram(shaderProgram);
+		glUniform4f(uniformOurColor, 0.f, greenValue, 0.f, 1.f);
+		glUseProgram(0);
+
+		// Render rectangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+		glUseProgram(0);
 
 		// Events & Swap buffers
 		glfwSwapBuffers(window);
