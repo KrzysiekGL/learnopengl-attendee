@@ -17,10 +17,10 @@
 #define HEIGHT 600
 
 const float vertices[] = {
-	.5, .5, .0,
-	.5, -.5, .0,
-	-.5, -.5, .0,
-	-.5, .5, .0,
+	.5,  .5, .0,		1.f, 0.f, 0.f,
+	.5, -.5, .0,		0.f, 1.f, 0.f,
+	-.5, -.5, .0,		0.f, 0.f, 1.f,
+	-.5,  .5, .0,		1.f, 0.f, 1.f,
 };
 
 const GLuint indices[] = {
@@ -29,16 +29,19 @@ const GLuint indices[] = {
 };
 
 const char * vertexSahderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos\n;"
+	"layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec3 aColor;\n"
+	"out vec3 ourColor;\n"
 	"void main() {\n"
 	"	gl_Position = vec4(aPos, 1.f);\n"
+	"	ourColor = aColor;\n"
 	"}\n";
 
 const char * fragmentShaderSource = "#version 330 core\n"
+	"in vec3 ourColor;\n"
 	"out vec4 fragColor;\n"
-	"uniform vec4 ourColor;\n"
 	"void main() {\n"
-	"	fragColor = ourColor;\n"
+	"	fragColor = vec4(ourColor, 1.f);\n"
 	"}\n";
 
 void framebufferSizeCallback(GLFWwindow * window, int width, int height) {
@@ -113,8 +116,14 @@ int main(int argc, char ** argv, char ** eval) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Linking Vertex Attributes
+
+	// Vertices
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+
+	// Colors
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
 	// Bind to default buffers (VAO (!*), VBO, EBO)
 	// *VAO keeps track of the last bound EBO while the VAO is bound.
@@ -184,15 +193,6 @@ int main(int argc, char ** argv, char ** eval) {
 		}
 	}
 
-	// Uniforms
-	float timeValue = glfwGetTime();
-	float greenValue = (sin(timeValue) / 2.f) + .5f;
-	int uniformOurColor = glGetUniformLocation(shaderProgram, "ourColor");
-	std::cout << "ourColor location: " << uniformOurColor << "\n";
-	glUseProgram(shaderProgram);
-	glUniform4f(uniformOurColor, 0.f, greenValue, 0.f, 1.f);
-	glUseProgram(0);
-
 	// Setup OpneGL to use the shader program and clean-up unneccesary now shader objects
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -210,12 +210,6 @@ int main(int argc, char ** argv, char ** eval) {
 
 		//Clrear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		// Chagne uniform value
-		greenValue = (sin(glfwGetTime())/2.f)+.5f;
-		glUseProgram(shaderProgram);
-		glUniform4f(uniformOurColor, 0.f, greenValue, 0.f, 1.f);
-		glUseProgram(0);
 
 		// Render rectangle
 		glUseProgram(shaderProgram);
