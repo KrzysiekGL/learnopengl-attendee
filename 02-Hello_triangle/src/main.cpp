@@ -49,7 +49,7 @@ void processInput(GLFWwindow * window) {
 }
 
 int main(int argc, char ** argv, char ** eval) {
-	std::cout << "01-Creating_a_window\n";
+	std::cout << "02-Hello_triangle\n";
 
 	// GLFW initializationf
 	glfwInit();
