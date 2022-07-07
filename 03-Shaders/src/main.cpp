@@ -6,38 +6,29 @@
  */
 
 #include <iostream>
+#include <math.h>
 
 // Include GLAD before GLFW
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
 
+#include "Shader.hpp"
+
 #define WIDTH 800
 #define HEIGHT 600
 
 const float vertices[] = {
-	.5, .5, .0,
-	.5, -.5, .0,
-	-.5, -.5, .0,
-	-.5, .5, .0,
+	.5,  .5, .0,		1.f, 0.f, 0.f,
+	.5, -.5, .0,		0.f, 1.f, 0.f,
+	-.5, -.5, .0,		0.f, 0.f, 1.f,
+	-.5,  .5, .0,		1.f, 0.f, 1.f,
 };
 
 const GLuint indices[] = {
 	0, 1, 3,
 	1, 2, 3
 };
-
-const char * vertexSahderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos\n;"
-	"void main() {\n"
-	"	gl_Position = vec4(aPos, 1.f);\n"
-	"}\n";
-
-const char * fragmentShaderSource = "#version 330 core\n"
-	"out vec4 fragColor;\n"
-	"void main() {\n"
-	"	fragColor = vec4(1.f, .5f, .2f, 1.f);\n"
-	"}\n";
 
 void framebufferSizeCallback(GLFWwindow * window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -49,7 +40,7 @@ void processInput(GLFWwindow * window) {
 }
 
 int main(int argc, char ** argv, char ** eval) {
-	std::cout << "02-Hello_triangle\n";
+	std::cout << "03-Shaders\n";
 
 	// GLFW initializationf
 	glfwInit();
@@ -74,6 +65,13 @@ int main(int argc, char ** argv, char ** eval) {
 		std::cout << "ERROR: Failed to initialize OpenGL context (GLAD)\n";
 		glfwTerminate();
 		return -1;
+	}
+
+	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
+	{
+		int numAttribs;
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttribs);
+		std::cout << "Maximum number of attributes supported: " << numAttribs << "\n";
 	}
 
 	// GLFW callbacks
@@ -104,8 +102,14 @@ int main(int argc, char ** argv, char ** eval) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Linking Vertex Attributes
+
+	// Vertices
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+
+	// Colors
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
 	// Bind to default buffers (VAO (!*), VBO, EBO)
 	// *VAO keeps track of the last bound EBO while the VAO is bound.
@@ -117,68 +121,8 @@ int main(int argc, char ** argv, char ** eval) {
 
 	// -----------------------------------------------------------------------------------------------
 
-	// Vertex shader
-	unsigned int vertexShader;
-	if(!(vertexShader = glCreateShader(GL_VERTEX_SHADER))) {
-		std::cout << "ERROR: Failed to create vertex shader object\n";
-		glfwTerminate();
-		return -1;
-	}
-	glShaderSource(vertexShader, 1, &vertexSahderSource, NULL);
-	glCompileShader(vertexShader);
-	{
-		int success;
-		char infoLog[512];
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-		if(!success) {
-			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-			std::cout << "ERROR: Vertex shader compilation failed\n" << infoLog << std::endl;
-		}
-	}
-
-	// Fragment shader
-	unsigned int fragmentShader;
-	if(!(fragmentShader = glCreateShader(GL_FRAGMENT_SHADER))) {
-		std::cout << "ERROR: Failed to create fragment shader object\n";
-		glfwTerminate();
-		return -1;
-	}
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	{
-		int success;
-		char infoLog[512];
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-		if(!success) {
-			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-			std::cout << "ERROR: Fragment shader compilation failed\n" << infoLog << std::endl;
-		}
-	}
-
 	// Shader program
-	unsigned int shaderProgram;
-	if(!(shaderProgram = glCreateProgram())) {
-		std::cout << "ERROR: Failed to create shader program object\n";
-		glfwTerminate();
-		return -1;
-	}
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	{
-		int success;
-		char infoLog[512];
-		glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-		if(!success) {
-			glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-			std::cout << "ERROR: Shader program linking failed\n" << infoLog << std::endl;
-		}
-	}
-
-	// Setup OpneGL to use the shader program and clean-up unneccesary now shader objects
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glUseProgram(shaderProgram);
+	Shader basic("../shader/basic.vert", "../shader/basic.frag");
 
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
@@ -189,12 +133,16 @@ int main(int argc, char ** argv, char ** eval) {
 		processInput(window);
 
 		// Rendering
+
+		//Clrear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
+		// Render rectangle
+		basic.activate();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+		basic.deactivate();
 
 		// Events & Swap buffers
 		glfwSwapBuffers(window);
