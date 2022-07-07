@@ -25,7 +25,10 @@ public:
 	// Check if is Activated or not
 	bool isActive() const;
 
+	// Setters for uniforms in shaders
 	void setFloat(const char* uniformName, float value) const;
+	void setInt(const char* uniformName, int value) const;
+	void setBool(const char* uniformName, bool value) const;
 
 private:
 	// Shader types enum

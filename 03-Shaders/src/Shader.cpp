@@ -48,6 +48,18 @@ bool Shader::isActive() const {
 	return active;
 }
 
+void Shader::setFloat(const char *uniformName, float value) const {
+	glUniform1f(glGetUniformLocation(ID, uniformName), value);
+}
+
+void Shader::setInt(const char *uniformName, int value) const {
+	glUniform1i(glGetUniformLocation(ID, uniformName), value);
+}
+
+void Shader::setBool(const char *uniformName, bool value) const {
+	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
+}
+
 void Shader::readFile(std::string path, std::string & readBuf) {
 	std::ifstream f(path, std::ios::ate);
 	if(f.is_open()) {
