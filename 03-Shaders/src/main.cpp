@@ -122,7 +122,7 @@ int main(int argc, char ** argv, char ** eval) {
 	// -----------------------------------------------------------------------------------------------
 
 	// Shader program
-	Shader shader("../shader/basic.vert", "../shader/basic.frag");
+	Shader basic("../shader/basic.vert", "../shader/basic.frag");
 
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
@@ -138,11 +138,11 @@ int main(int argc, char ** argv, char ** eval) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render rectangle
-		shader.activate();
+		basic.activate();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-		shader.deactivate();
+		basic.deactivate();
 
 		// Events & Swap buffers
 		glfwSwapBuffers(window);
