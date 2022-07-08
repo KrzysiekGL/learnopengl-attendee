@@ -8,15 +8,10 @@
 #include <iostream>
 #include <math.h>
 
-// Include GLAD before GLFW
 #include <glad/glad.h>
 
-#include <GLFW/glfw3.h>
-
+#include "Context.hpp"
 #include "Shader.hpp"
-
-#define WIDTH 800
-#define HEIGHT 600
 
 const float vertices[] = {
 	.5,  .5, .0,		1.f, 0.f, 0.f,
@@ -30,56 +25,10 @@ const GLuint indices[] = {
 	1, 2, 3
 };
 
-void framebufferSizeCallback(GLFWwindow * window, int width, int height) {
-	glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow * window) {
-	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-}
-
 int main(int argc, char ** argv, char ** eval) {
 	std::cout << "03-Shaders\n";
 
-	// GLFW initializationf
-	glfwInit();
-	// OpenGL version and features
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// Window features
-	glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
-
-	// GLFW window creation
-	GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, "learnopengl", NULL, NULL);
-	if(window == NULL) {
-		std::cout << "ERROR: Failed to create GLFW window\n";
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-
-	// Map to the OpenGL function pointers with GLAD
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "ERROR: Failed to initialize OpenGL context (GLAD)\n";
-		glfwTerminate();
-		return -1;
-	}
-
-	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
-	{
-		int numAttribs;
-		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttribs);
-		std::cout << "Maximum number of attributes supported: " << numAttribs << "\n";
-	}
-
-	// GLFW callbacks
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
-	// OpenGL state machine settings
-	framebufferSizeCallback(window, WIDTH, HEIGHT);
-	glClearColor(.2f, .3f, .3f, 1.f);
+	Context context("learnopengl");
 
 	// -----------------------------------------------------------------------------------------------
 	// Temp space for rendering stuff
@@ -128,9 +77,10 @@ int main(int argc, char ** argv, char ** eval) {
 	// -----------------------------------------------------------------------------------------------
 
 	// Game loop/Render loop
-	while(!glfwWindowShouldClose(window)) {
+	while(!context.shouldClose()) {
 		// Input
-		processInput(window);
+		context.processInput();
+		context.updateContextState();
 
 		// Rendering
 
@@ -145,8 +95,8 @@ int main(int argc, char ** argv, char ** eval) {
 		basic.deactivate();
 
 		// Events & Swap buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		context.swapBuffers();
+		Context::pollEvents();
 	}
 
 	// Clean-up
