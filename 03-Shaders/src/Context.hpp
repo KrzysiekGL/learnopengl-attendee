@@ -27,13 +27,30 @@ public:
 	// Swap buffers for context
 	void swapBuffers() const;
 
-	// Poll events for GLFW
-	static void pollEvents();
+	// Make context current for OpenGL and set GLFW callbacks for this context
+	void makeCurrent();
+
+	// Check if OpenGL was mapped for this context
+	bool isOpenGLMapped() const;
+
+	// Get supported maximum number of atributes for shaders
+	static int getNumAttributes();
 
 private:
 	GLFWwindow * window;
 	int width;
 	int height;
+	float backgroundColor[4];
+	bool openglMapped = false;
+
+	// Push OpenGL viewport according to this context
+	void pushViewport() const;
+
+	// Push OpenGL background clear color
+	void pushBackgroundColor() const;
+
+	// Map to the OpenGL function pointers with GLAD
+	void mapOpenGL();
 
 	// Sets glViewport when window resizes
 	static void framebufferSizeCallback(GLFWwindow * window, int width, int height);

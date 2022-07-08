@@ -4,9 +4,6 @@ Context::Context(std::string windowName, int width, int height) {
 	this->width = width;
 	this->height = height;
 
-	// GLFW initializationf
-	glfwInit();
-
 	// OpenGL version and features
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -18,30 +15,18 @@ Context::Context(std::string windowName, int width, int height) {
 	// GLFW window creation
 	window = glfwCreateWindow(width, height, "learnopengl", NULL, NULL);
 	if(window == NULL) {
-		std::cout << "ERROR: Failed to create GLFW window\n";
-		glfwTerminate();
-		return;
-	}
-	glfwMakeContextCurrent(window);
-
-	// Map to the OpenGL function pointers with GLAD
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "ERROR: Failed to initialize OpenGL context (GLAD)\n";
-		glfwTerminate();
+		std::cerr << "ERROR: (Context) Failed to create GLFW window\n";
 		return;
 	}
 
-	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
-	int numAttribs;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttribs);
-	std::cout << "Maximum number of attributes supported: " << numAttribs << "\n";
-
-	// GLFW callbacks
+	// GLFW callbacks for this context
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-	// OpenGL state machine settings
-	framebufferSizeCallback(window, width, height);
-	glClearColor(.2f, .3f, .3f, 1.f);
+	// Set default background color for GL_COLOR_BUFFER_BIT
+	backgroundColor[0] = .2f;
+	backgroundColor[1] = .3f;
+	backgroundColor[2] = .3f;
+	backgroundColor[3] = 1.f;
 }
 
 bool Context::shouldClose() const {
@@ -61,8 +46,59 @@ void Context::swapBuffers() const {
 	glfwSwapBuffers(window);
 }
 
-void Context::pollEvents() {
-	glfwPollEvents();
+void Context::makeCurrent() {
+	// Set current GLFW context
+	glfwMakeContextCurrent(window);
+
+	// With the context set, map OpenGL functions
+	mapOpenGL();
+
+	// OpenGL settings
+	pushViewport();
+	pushBackgroundColor();
+}
+
+bool Context::isOpenGLMapped() const {
+	return openglMapped;
+}
+
+void Context::mapOpenGL() {
+	if(window != glfwGetCurrentContext()) {
+		std::cerr << "ERROR: (mapOpenGL) GLFW context is not set to this context\n";
+		return;
+	}
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+	 	std::cerr << "ERROR: (mapOpenGL) Failed to initialize OpenGL context (GLAD)\n";
+	 	return;
+	}
+
+	openglMapped = true;
+}
+
+int Context::getNumAttributes() {
+	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
+	if(!openglMapped) {
+		std::cerr << "ERROR: (getNumAttributes) OpenGL not mapped\n";
+		return -1;
+	}
+
+	int numAttribs;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttribs);
+	return numAttribs;
+}
+
+void Context::pushViewport() const {
+	framebufferSizeCallback(window, width, height);
+}
+
+void Context::pushBackgroundColor() const {
+	float r, g, b, a;
+	r = backgroundColor[0];
+	g = backgroundColor[1];
+	b = backgroundColor[2];
+	a = backgroundColor[3];
+	glClearColor(r, g, b, a);
 }
 
 void Context::framebufferSizeCallback(GLFWwindow * window, int width, int height) {

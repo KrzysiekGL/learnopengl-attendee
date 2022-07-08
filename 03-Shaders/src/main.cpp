@@ -9,6 +9,7 @@
 #include <math.h>
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "Context.hpp"
 #include "Shader.hpp"
@@ -28,7 +29,10 @@ const GLuint indices[] = {
 int main(int argc, char ** argv, char ** eval) {
 	std::cout << "03-Shaders\n";
 
+	glfwInit();
+
 	Context context("learnopengl");
+	context.makeCurrent();
 
 	// -----------------------------------------------------------------------------------------------
 	// Temp space for rendering stuff
@@ -67,12 +71,9 @@ int main(int argc, char ** argv, char ** eval) {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 	// -----------------------------------------------------------------------------------------------
-
 	// Shader program
 	Shader basic("../shader/basic.vert", "../shader/basic.frag");
-
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
@@ -84,7 +85,7 @@ int main(int argc, char ** argv, char ** eval) {
 
 		// Rendering
 
-		//Clrear color buffer
+		// Clrear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render rectangle
@@ -96,7 +97,7 @@ int main(int argc, char ** argv, char ** eval) {
 
 		// Events & Swap buffers
 		context.swapBuffers();
-		Context::pollEvents();
+		glfwPollEvents();
 	}
 
 	// Clean-up
