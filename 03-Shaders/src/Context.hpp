@@ -48,7 +48,7 @@ public:
 	bool isOpenGLMapped() const;
 
 	// Get supported maximum number of atributes for shaders
-	int getNumAttributes();
+	int getNumAttributes() const;
 
 private:
 	GLFWwindow * window;

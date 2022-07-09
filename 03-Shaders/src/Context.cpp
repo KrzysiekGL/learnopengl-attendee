@@ -76,7 +76,7 @@ void Context::mapOpenGL() {
 	openglMapped = true;
 }
 
-int Context::getNumAttributes() {
+int Context::getNumAttributes() const {
 	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
 	if(!openglMapped) {
 		std::cerr << "ERROR: (Context::getNumAttributes) OpenGL not mapped\n";
