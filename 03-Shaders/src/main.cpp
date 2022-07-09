@@ -15,15 +15,13 @@
 #include "Shader.hpp"
 
 const float vertices[] = {
-	.5,  .5, .0,		1.f, 0.f, 0.f,
-	.5, -.5, .0,		0.f, 1.f, 0.f,
-	-.5, -.5, .0,		0.f, 0.f, 1.f,
-	-.5,  .5, .0,		1.f, 0.f, 1.f,
+	.5, .0, .0,		1.f, 0.f, 0.f,
+	-.5,.0, .0,   0.f, 1.f, 0.f,
+	.0, .5, .0,   0.f, 0.f, 1.f,
 };
 
 const GLuint indices[] = {
-	0, 1, 3,
-	1, 2, 3
+	0, 1, 2,
 };
 
 int main(int argc, char ** argv, char ** eval) {
