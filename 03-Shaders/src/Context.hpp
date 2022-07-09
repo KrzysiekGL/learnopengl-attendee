@@ -1,3 +1,18 @@
+/*
+ * This class wraps GLFWwindow and allows to create
+ * a single instance of a context for:
+ * - rendering into
+ * - handling I/O (GLFW)
+ * - binding GLFW specific callbacks in regard to *this* context
+ * - mapping OpenGL for *this* context
+ *  	(TBD, although OpenGL could be mapped only if there is a "current context" enabled)
+ *
+ * Context class is not a wrapper for the whole GLFW library.
+ *
+ * Author: KrzysiekGL webmaster@unexpectd.com
+ * 06/2022
+ */
+
 #ifndef CONTEXT_HPP
 #define CONTEXT_HPP
 

@@ -1,3 +1,10 @@
+/*
+ * This header contains specific callbacks for GLFW.
+ *
+ * Author: KrzysiekGL webmaster@unexpectd.com
+ * 06/2022
+ */
+
 #ifndef CALLBACKS_HPP
 #define CALLBACKS_HPP
 

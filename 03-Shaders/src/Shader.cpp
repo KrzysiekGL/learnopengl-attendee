@@ -7,7 +7,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	std::string fragmentSource;
 	readFile(fragmentPath, fragmentSource);
 
-	// Complie shaders
+	// Compile shaders
 	GLuint vertexShader;
 	if(!(vertexShader = buildShader(vertexSource, Type::Vertex)))
 		std::cerr << "ERROR: Vertex shader " << vertexPath << " compilation failed\n";
