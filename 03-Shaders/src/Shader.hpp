@@ -20,7 +20,6 @@
 
 #include <string>
 #include <iostream>
-#include <thread>
 #include <cassert>
 
 #include <glad/glad.h>
