@@ -36,28 +36,48 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glDeleteShader(fragmentShader);
 }
 
-void Shader::activate() const {
+GLint Shader::activate() const {
+	GLint progID = currentlyActivated();
+
+	if(ID==progID)
+		return ID;
+
 	glUseProgram(ID);
+	return progID;
 }
 
 void Shader::deactivate() const {
-	glUseProgram(0);
+	GLint progID = currentlyActivated();
+
+	if(ID==progID)
+		glUseProgram(0);
 }
 
-bool Shader::isActive() const {
-	return active;
+GLint Shader::currentlyActivated() {
+	GLint progID;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &progID);
+	return progID;
 }
 
 void Shader::setFloat(const char *uniformName, float value) const {
+	GLint prevProgID = this->activate();
 	glUniform1f(glGetUniformLocation(ID, uniformName), value);
+	if(ID!=prevProgID)
+		glUseProgram(prevProgID);
 }
 
 void Shader::setInt(const char *uniformName, int value) const {
+	GLint prevProgID = this->activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), value);
+	if(ID!=prevProgID)
+		glUseProgram(prevProgID);
 }
 
 void Shader::setBool(const char *uniformName, bool value) const {
+	GLint prevProgID = this->activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
+	if(ID!=prevProgID)
+		glUseProgram(prevProgID);
 }
 
 GLuint Shader::buildShader(std::string source, Type type) {
