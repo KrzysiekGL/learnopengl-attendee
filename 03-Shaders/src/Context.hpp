@@ -1,9 +1,6 @@
 #ifndef CONTEXT_HPP
 #define CONTEXT_HPP
 
-#define WIDTH 800
-#define HEIGHT 600
-
 #include <iostream>
 #include <string>
 
@@ -15,7 +12,7 @@
 class Context {
 public:
 	// Glfw context creation along with OpenGL initialization
-	Context(std::string windowName, int width = WIDTH, int height = HEIGHT);
+	Context(std::string windowName, int width = 800, int height = 600);
 
 	// Should this context be closed
 	bool shouldClose() const;
