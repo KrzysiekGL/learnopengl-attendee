@@ -72,6 +72,7 @@ int main(int argc, char ** argv, char ** eval) {
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
 	Shader basic("../shader/basic.vert", "../shader/basic.frag");
+	basic.setFloat("offset", 0.3f);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 

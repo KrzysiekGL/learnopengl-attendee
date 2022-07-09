@@ -35,12 +35,16 @@ public:
 	// .frag for a fragment shader
 	Shader(const char* vertexPath, const char* fragmentPath);
 
-	// Force Activate
-	void activate() const;
-	// Force Deactivate
+	// Delete copy and assignment constructors
+	Shader (const Shader &) = delete;
+	Shader & operator=(const Shader &) = delete;
+
+	// Activate and return ID of the previusly activated, if there was any (including 0)
+	GLint activate() const;
+	// Deactivate only if is activated
 	void deactivate() const;
-	// Check if is Activated or not
-	bool isActive() const;
+	// Get ID of the currently activated shader program
+	static GLint currentlyActivated();
 
 	// Setters for uniforms in shaders
 	void setFloat(const char* uniformName, float value) const;
@@ -54,11 +58,10 @@ private:
 		Fragment
 	};
 
+	GLuint ID;
+
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);
-
-	GLuint ID;
-	bool active;
 };
 
 #endif /* SHADER_HPP */

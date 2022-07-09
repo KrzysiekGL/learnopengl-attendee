@@ -29,6 +29,10 @@ public:
 	// Glfw context creation along with OpenGL initialization
 	Context(std::string windowName, int width = 800, int height = 600);
 
+	// Delete copy and assignment constructors
+	Context (const Context &) = delete;
+	Context & operator=(const Context &) = delete;
+
 	// Should this context be closed
 	bool shouldClose() const;
 
