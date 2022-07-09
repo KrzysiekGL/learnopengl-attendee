@@ -1,2 +1,3 @@
-# Hello trinagle
-First introduction of the rendering pipeline along with an example.
+# Shaders
+Shader and Shader program introduction
+along with some heavy changes to the project structure.

@@ -85,7 +85,7 @@ int main(int argc, char ** argv, char ** eval) {
 
 		// Rendering
 
-		// Clrear color buffer
+		// Clear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render rectangle
