@@ -79,9 +79,9 @@ int main(int argc, char ** argv, char ** eval) {
 
 	// Game loop/Render loop
 	while(!context.shouldClose()) {
-		// Input
-		context.processInput();
+		// Input & Context state
 		context.updateContextState();
+		context.processInput();
 
 		// Rendering
 
