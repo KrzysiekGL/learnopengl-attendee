@@ -19,4 +19,14 @@ $ cmake ..
 $ make -j$(nproc)
 $ ./app # to run the stage application
 ```
+## Stages
+This project is designed to represent the progress through the stages of learning OpenGL
+based on the learn path introduced in the [guide](https://learnopengl.com/Introduction).
+But the code isn't the same as presented there. Instead, the project structure evolves
+in the way I thought it would look and feel better in the means of structure, usability or
+simple preferences.
+
+The stages are numbered from `01` to the latest presented. That means that e.g. stage `04`
+is newer than `03` thus, despite it's a copy of `03`, it contains changes in regard to the
+previous stage, and contains new contents.
 
