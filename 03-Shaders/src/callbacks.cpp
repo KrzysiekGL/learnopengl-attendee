@@ -6,6 +6,6 @@ void clbck::framebufferSize(GLFWwindow * window, int width, int height) {
 
 void clbck::error(int code, const char *description) {
 	std::cerr << "ERROR: (clbck::error) GLFW error code " << code \
-						<< "\nError message:\n" << description << '\n';
+		<< "\nError message:\n" << description << '\n';
 }
 
