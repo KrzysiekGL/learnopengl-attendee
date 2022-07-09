@@ -10,15 +10,15 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	// Compile shaders
 	GLuint vertexShader;
 	if(!(vertexShader = buildShader(vertexSource, Type::Vertex)))
-		std::cerr << "ERROR: Vertex shader " << vertexPath << " compilation failed\n";
+		std::cerr << "ERROR: (Shader::Shader) Vertex shader " << vertexPath << " compilation failed\n";
 	GLuint fragmentShader;
 	if(!(fragmentShader = buildShader(fragmentSource, Type::Fragment)))
-		std::cerr << "ERROR: Fragment shader " << fragmentPath << " compilation failed\n";
+		std::cerr << "ERROR: (Shader::Shader) Fragment shader " << fragmentPath << " compilation failed\n";
 	assert(((vertexShader!=0) && (fragmentShader!=0)));
 
 	// Create shader program object and link shaders
 	if(!(ID = glCreateProgram()))
-		std::cerr << "ERROR: Failed to create shader object\n";
+		std::cerr << "ERROR: (Shader::Shader) Failed to create shader object\n";
 	assert(ID!=0);
 	glAttachShader(ID, vertexShader);
 	glAttachShader(ID, fragmentShader);
@@ -28,7 +28,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glGetProgramiv(ID, GL_LINK_STATUS, &success);
 	if(!success) {
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
-		std::cerr << "ERROR: Shader program linking failed\n" << infoLog << '\n';
+		std::cerr << "ERROR: (Shader::Shader) Shader program linking failed\n" << infoLog << '\n';
 	}
 
 	// Clean created shaders and leave only the shader program
@@ -66,13 +66,13 @@ GLuint Shader::buildShader(std::string source, Type type) {
 	switch(type) {
 	case Vertex:
 		if(!(shader = glCreateShader(GL_VERTEX_SHADER))) {
-			std::cerr << "ERROR: Failed to create vertex shader object\n";
+			std::cerr << "ERROR: (Shader::buildShader) Failed to create vertex shader object\n";
 			return 0;
 		}
 		break;
 	case Fragment:
 		if(!(shader = glCreateShader(GL_FRAGMENT_SHADER))) {
-			std::cerr << "ERROR: Failed to create fragment shader object\n";
+			std::cerr << "ERROR: (Shader::buildShader) Failed to create fragment shader object\n";
 			return 0;
 		}
 		break;
@@ -89,7 +89,7 @@ GLuint Shader::buildShader(std::string source, Type type) {
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if(!success){
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cerr << "ERROR: Shader compilation failed\n" << infoLog << '\n';
+		std::cerr << "ERROR: (Shader::buildShader) Shader compilation failed\n" << infoLog << '\n';
 		return 0;
 	}
 
