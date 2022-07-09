@@ -3,22 +3,22 @@
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	// Read sources from files
 	std::string vertexSource;
-	readFile(vertexPath, vertexSource);
+	utls::readFile(vertexPath, vertexSource);
 	std::string fragmentSource;
-	readFile(fragmentPath, fragmentSource);
+	utls::readFile(fragmentPath, fragmentSource);
 
-	// Complie shaders
+	// Compile shaders
 	GLuint vertexShader;
 	if(!(vertexShader = buildShader(vertexSource, Type::Vertex)))
-		std::cerr << "ERROR: Vertex shader " << vertexPath << " compilation failed\n";
+		std::cerr << "ERROR: (Shader::Shader) Vertex shader " << vertexPath << " compilation failed\n";
 	GLuint fragmentShader;
 	if(!(fragmentShader = buildShader(fragmentSource, Type::Fragment)))
-		std::cerr << "ERROR: Fragment shader " << fragmentPath << " compilation failed\n";
+		std::cerr << "ERROR: (Shader::Shader) Fragment shader " << fragmentPath << " compilation failed\n";
 	assert(((vertexShader!=0) && (fragmentShader!=0)));
 
 	// Create shader program object and link shaders
 	if(!(ID = glCreateProgram()))
-		std::cerr << "ERROR: Failed to create shader object\n";
+		std::cerr << "ERROR: (Shader::Shader) Failed to create shader object\n";
 	assert(ID!=0);
 	glAttachShader(ID, vertexShader);
 	glAttachShader(ID, fragmentShader);
@@ -28,7 +28,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glGetProgramiv(ID, GL_LINK_STATUS, &success);
 	if(!success) {
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
-		std::cerr << "ERROR: Shader program linking failed\n" << infoLog << '\n';
+		std::cerr << "ERROR: (Shader::Shader) Shader program linking failed\n" << infoLog << '\n';
 	}
 
 	// Clean created shaders and leave only the shader program
@@ -60,38 +60,19 @@ void Shader::setBool(const char *uniformName, bool value) const {
 	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
 }
 
-void Shader::readFile(std::string path, std::string & readBuf) {
-	std::ifstream f(path, std::ios::ate);
-	if(f.is_open()) {
-		auto size = f.tellg();
-		f.seekg(0);
-		std::string str(size, '\0');
-		try {
-			f.read(&str[0], size);
-		}
-		catch(std::ifstream::failure e) {
-			std::cerr << "ERROR: Error reading file " << path << '\n';
-		}
-		f.close();
-		readBuf = str.c_str();
-	}
-	else
-		std::cerr << "ERROR: Error opening file: " << path << '\n';
-}
-
 GLuint Shader::buildShader(std::string source, Type type) {
 	// Create vertex shader object
 	GLuint shader;
 	switch(type) {
 	case Vertex:
 		if(!(shader = glCreateShader(GL_VERTEX_SHADER))) {
-			std::cerr << "ERROR: Failed to create vertex shader object\n";
+			std::cerr << "ERROR: (Shader::buildShader) Failed to create vertex shader object\n";
 			return 0;
 		}
 		break;
 	case Fragment:
 		if(!(shader = glCreateShader(GL_FRAGMENT_SHADER))) {
-			std::cerr << "ERROR: Failed to create fragment shader object\n";
+			std::cerr << "ERROR: (Shader::buildShader) Failed to create fragment shader object\n";
 			return 0;
 		}
 		break;
@@ -108,7 +89,7 @@ GLuint Shader::buildShader(std::string source, Type type) {
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if(!success){
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cerr << "ERROR: Shader compilation failed\n" << infoLog << '\n';
+		std::cerr << "ERROR: (Shader::buildShader) Shader compilation failed\n" << infoLog << '\n';
 		return 0;
 	}
 
