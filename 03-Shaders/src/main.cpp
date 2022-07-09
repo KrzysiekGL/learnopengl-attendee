@@ -102,6 +102,7 @@ int main(int argc, char ** argv, char ** eval) {
 
 	// Clean-up
 	glfwTerminate();
+
 	return 0;
 }
 

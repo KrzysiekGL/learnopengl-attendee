@@ -10,6 +10,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "callbacks.hpp"
+
 class Context {
 public:
 	// Glfw context creation along with OpenGL initialization
@@ -34,7 +36,7 @@ public:
 	bool isOpenGLMapped() const;
 
 	// Get supported maximum number of atributes for shaders
-	static int getNumAttributes();
+	int getNumAttributes();
 
 private:
 	GLFWwindow * window;
@@ -52,8 +54,6 @@ private:
 	// Map to the OpenGL function pointers with GLAD
 	void mapOpenGL();
 
-	// Sets glViewport when window resizes
-	static void framebufferSizeCallback(GLFWwindow * window, int width, int height);
 };
 
 #endif /* CONTEXT_HPP */

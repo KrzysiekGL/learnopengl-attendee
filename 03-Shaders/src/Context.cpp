@@ -15,12 +15,12 @@ Context::Context(std::string windowName, int width, int height) {
 	// GLFW window creation
 	window = glfwCreateWindow(width, height, "learnopengl", NULL, NULL);
 	if(window == NULL) {
-		std::cerr << "ERROR: (Context) Failed to create GLFW window\n";
+		std::cerr << "ERROR: (Context::Context) Failed to create GLFW window\n";
 		return;
 	}
 
 	// GLFW callbacks for this context
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glfwSetFramebufferSizeCallback(window, clbck::framebufferSize);
 
 	// Set default background color for GL_COLOR_BUFFER_BIT
 	backgroundColor[0] = .2f;
@@ -64,12 +64,12 @@ bool Context::isOpenGLMapped() const {
 
 void Context::mapOpenGL() {
 	if(window != glfwGetCurrentContext()) {
-		std::cerr << "ERROR: (mapOpenGL) GLFW context is not set to this context\n";
+		std::cerr << "ERROR: (Context::mapOpenGL) GLFW context is not set to this context\n";
 		return;
 	}
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-	 	std::cerr << "ERROR: (mapOpenGL) Failed to initialize OpenGL context (GLAD)\n";
+	 	std::cerr << "ERROR: (Context::mapOpenGL) Failed to initialize OpenGL context (GLAD)\n";
 	 	return;
 	}
 
@@ -79,7 +79,7 @@ void Context::mapOpenGL() {
 int Context::getNumAttributes() {
 	// Maximum Vertex Attributes supported by the hardware (at least 16*vec4)
 	if(!openglMapped) {
-		std::cerr << "ERROR: (getNumAttributes) OpenGL not mapped\n";
+		std::cerr << "ERROR: (Context::getNumAttributes) OpenGL not mapped\n";
 		return -1;
 	}
 
@@ -89,7 +89,7 @@ int Context::getNumAttributes() {
 }
 
 void Context::pushViewport() const {
-	framebufferSizeCallback(window, width, height);
+	clbck::framebufferSize(window, width, height);
 }
 
 void Context::pushBackgroundColor() const {
@@ -99,9 +99,5 @@ void Context::pushBackgroundColor() const {
 	b = backgroundColor[2];
 	a = backgroundColor[3];
 	glClearColor(r, g, b, a);
-}
-
-void Context::framebufferSizeCallback(GLFWwindow * window, int width, int height) {
-	glViewport(0, 0, width, height);
 }
 
