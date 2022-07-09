@@ -3,9 +3,9 @@
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	// Read sources from files
 	std::string vertexSource;
-	readFile(vertexPath, vertexSource);
+	utls::readFile(vertexPath, vertexSource);
 	std::string fragmentSource;
-	readFile(fragmentPath, fragmentSource);
+	utls::readFile(fragmentPath, fragmentSource);
 
 	// Compile shaders
 	GLuint vertexShader;
@@ -58,25 +58,6 @@ void Shader::setInt(const char *uniformName, int value) const {
 
 void Shader::setBool(const char *uniformName, bool value) const {
 	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
-}
-
-void Shader::readFile(std::string path, std::string & readBuf) {
-	std::ifstream f(path, std::ios::ate);
-	if(f.is_open()) {
-		auto size = f.tellg();
-		f.seekg(0);
-		std::string str(size, '\0');
-		try {
-			f.read(&str[0], size);
-		}
-		catch(std::ifstream::failure e) {
-			std::cerr << "ERROR: Error reading file " << path << '\n';
-		}
-		f.close();
-		readBuf = str.c_str();
-	}
-	else
-		std::cerr << "ERROR: Error opening file: " << path << '\n';
 }
 
 GLuint Shader::buildShader(std::string source, Type type) {

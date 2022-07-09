@@ -20,12 +20,12 @@
 
 #include <string>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <thread>
 #include <cassert>
 
 #include <glad/glad.h>
+
+#include "utils.hpp"
 
 class Shader {
 public:
@@ -53,9 +53,6 @@ private:
 		Vertex,
 		Fragment
 	};
-
-	// Reads a file into a std::string
-	void readFile(std::string path, std::string & readBuf);
 
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);
