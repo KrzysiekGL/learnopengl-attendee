@@ -1,2 +1,3 @@
-# Hello trinagle
-First introduction of the rendering pipeline along with an example.
+# Textures
+Using textures i.e. images as a color for rendering elemnets.
+
