@@ -18,23 +18,19 @@
 #include "Shader.hpp"
 
 const float vertices[] = {
-	.5, .0, .0,
-	-.5,.0, .0,
-	.0, .5, .0,
+	// positions		// colors				// texture coordinates
+   0.5f,	0.5f, 0.0f,		1.0f, 0.0f, 0.0f,		1.0f, 1.0f,		// top right
+	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,		1.0f, 0.0f,		// bottom right
+	-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,		0.0f, 0.0f,		// bottom left
+	-0.5f,	0.5f, 0.0f,		1.0f, 1.0f, 0.0f,		0.0f, 1.0f		// top left
 };
-
 const GLuint indices[] = {
 	0, 1, 2,
-};
-
-const float texCoords[] = {
-	.0f, .0f,
-	1.f, .0f,
-	.5f, 1.f,
+	2, 3, 0,
 };
 
 int main(int argc, char ** argv, char ** eval) {
-	std::cout << "03-Shaders\n";
+	std::cout << "04-Textures\n";
 
 	glfwInit();
 
@@ -62,10 +58,15 @@ int main(int argc, char ** argv, char ** eval) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Linking Vertex Attributes
-
-	// Vertices
+	// aPos
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	// aColor
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// aTexCoord
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	// Bind to default buffers (VAO (!*), VBO, EBO)
 	// *VAO keeps track of the last bound EBO while the VAO is bound.
@@ -95,6 +96,8 @@ int main(int argc, char ** argv, char ** eval) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Free the image data (unsigned char *) memory
 	stbi_image_free(data);
+	// Bind default 2D texture
+	glBindTexture(GL_TEXTURE_2D, 0);
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
 	Shader basic("../shader/texture.vert", "../shader/texture.frag");
@@ -115,8 +118,10 @@ int main(int argc, char ** argv, char ** eval) {
 		// Render rectangle
 		basic.activate();
 		glBindVertexArray(VAO);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		basic.deactivate();
 
 		// Events & Swap buffers
