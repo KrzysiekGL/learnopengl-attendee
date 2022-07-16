@@ -77,10 +77,12 @@ int main(int argc, char ** argv, char ** eval) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	// -----------------------------------------------------------------------------------------------
 	// 2D Texture
+	// Tell STBI (image lib) to flip images vertically (0.0 lands on the down-left corner instead of up-left)
+	stbi_set_flip_vertically_on_load(true);
 	// Create a texture object
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	GLuint texture1;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 	// Set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -88,8 +90,9 @@ int main(int argc, char ** argv, char ** eval) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Loading an image/texture
 	GLint width, height, nrChannels;
-	unsigned char * data = stbi_load("../texture/container.jpg", &width, &height, &nrChannels, 0);
-	if(data==NULL) std::cerr << "Image not loaded\n";
+	const char * container = "../texture/container.jpg";
+	unsigned char * data = stbi_load(container, &width, &height, &nrChannels, 0);
+	if(data==NULL) std::cerr << "Image " << container << "  not loaded\n";
 	std::cout << width << " " << height << " " << nrChannels << std::endl;
 	// Generate texture (on the currently bound texture at the active texture unit)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -98,9 +101,31 @@ int main(int argc, char ** argv, char ** eval) {
 	stbi_image_free(data);
 	// Bind default 2D texture
 	glBindTexture(GL_TEXTURE_2D, 0);
+	// Second Texture
+	GLuint texture2;
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	const char * face = "../texture/face.png";
+	data = stbi_load(face, &width, &height, &nrChannels, 0);
+	if(data==NULL) std::cerr << "Image " << face << " not loaded\n";
+	std::cout << width << " " << height << " " << nrChannels << "\n";
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(data);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
 	Shader basic("../shader/texture.vert", "../shader/texture.frag");
+	basic.setInt("texture0", 0);
+	basic.setInt("texture1", 1);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
@@ -116,9 +141,14 @@ int main(int argc, char ** argv, char ** eval) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render rectangle
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 		basic.activate();
 		glBindVertexArray(VAO);
-		glBindTexture(GL_TEXTURE_2D, textureID);
+
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
