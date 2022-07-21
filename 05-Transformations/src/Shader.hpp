@@ -11,8 +11,13 @@
  * - use a shader program
  * - set uniforms inside shaders
  *
- * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022
+ * Changes can be issued to the OpenGL state machine (glProgram domain)
+ * by a thread only if `occupantShaderID` is set to *this* ID.
+ * After a thread finishes it's job, it is obliged to set `occupantShaderID` to 0.
+ * This is for thread safety reasons.
+ *
+ * 2022
+ * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
 
 #ifndef SHADER_HPP
@@ -21,6 +26,7 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <atomic>
 
 #include <glad/glad.h>
 
@@ -35,10 +41,11 @@ public:
 	Shader(const char* vertexPath, const char* fragmentPath);
 
 	// Delete copy and assignment constructors
-	Shader (const Shader &) = delete;
+	Shader(const Shader &) = delete;
 	Shader & operator=(const Shader &) = delete;
 
-	// Activate and return ID of the previusly activated, if there was any (including 0)
+	// Try to activate this Shader and return 0 if succeeded.
+	// Thread safe, if couldn't activate, return ID of the currently activated.
 	GLint activate() const;
 	// Deactivate only if is activated
 	void deactivate() const;
@@ -57,7 +64,11 @@ private:
 		Fragment
 	};
 
+	// OpenGL object ID
 	GLuint ID;
+
+	// Thread safety
+	static std::atomic<GLuint> occupantShaderID;
 
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);

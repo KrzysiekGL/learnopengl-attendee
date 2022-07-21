@@ -163,6 +163,7 @@ int main(int argc, char ** argv, char ** eval) {
 		glBindVertexArray(VAO);
 
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		basic.deactivate();

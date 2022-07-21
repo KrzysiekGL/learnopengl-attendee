@@ -1,6 +1,11 @@
 #include "Shader.hpp"
 
+std::atomic<GLuint> Shader::occupantShaderID(0);
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+	assert(vertexPath!=NULL);
+	assert(fragmentPath!=NULL);
+
 	// Read sources from files
 	std::string vertexSource;
 	utls::readFile(vertexPath, vertexSource);
@@ -37,20 +42,34 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 }
 
 GLint Shader::activate() const {
-	GLint progID = currentlyActivated();
-
-	if(ID==progID)
-		return ID;
+	// If any other thread is using OpenGL glProgram, wait till it's done
+	GLuint expectedProgram = 0;
+	GLuint counter = 0;
+	while(
+		!occupantShaderID.compare_exchange_weak(expectedProgram, ID) &&
+		counter<=300
+	)
+	{
+		++counter;
+		expectedProgram = 0;
+	}
+	if(expectedProgram!=0) {
+		std::cerr << "ERROR: (Shader::Activate) Couldn't activate Shader ID: " << ID
+							<< " Currently used Shader ID is: " << expectedProgram << "\n";
+		return expectedProgram;
+	}
 
 	glUseProgram(ID);
-	return progID;
+	return 0;
 }
 
 void Shader::deactivate() const {
-	GLint progID = currentlyActivated();
-
-	if(ID==progID)
-		glUseProgram(0);
+	// Just to be safe, make sure that the deactivating itself shader is acutally occupying OpenGL
+	//assert(occupantShaderID.load()==ID);
+	if(occupantShaderID.load()!=ID)
+		std::cerr << "Shader ID: " << ID << " is not active to be deactivated\n";
+	glUseProgram(0);
+	occupantShaderID.store(0);
 }
 
 GLint Shader::currentlyActivated() {
@@ -60,24 +79,21 @@ GLint Shader::currentlyActivated() {
 }
 
 void Shader::setFloat(const char *uniformName, float value) const {
-	GLint prevProgID = this->activate();
+	activate();
 	glUniform1f(glGetUniformLocation(ID, uniformName), value);
-	if(ID!=prevProgID)
-		glUseProgram(prevProgID);
-}
+	deactivate();
+	}
 
 void Shader::setInt(const char *uniformName, int value) const {
-	GLint prevProgID = this->activate();
+	activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), value);
-	if(ID!=prevProgID)
-		glUseProgram(prevProgID);
+	deactivate();
 }
 
 void Shader::setBool(const char *uniformName, bool value) const {
-	GLint prevProgID = this->activate();
+	activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
-	if(ID!=prevProgID)
-		glUseProgram(prevProgID);
+	deactivate();
 }
 
 GLuint Shader::buildShader(std::string source, Type type) {

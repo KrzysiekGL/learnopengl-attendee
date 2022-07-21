@@ -9,8 +9,10 @@ void utls::readFile(std::string path, std::string & readBuf) {
 		try {
 			f.read(&str[0], size);
 		}
-		catch(std::ifstream::failure e) {
-			std::cerr << "ERROR: (utls::readFile) Error reading file " << path << '\n';
+		catch(const std::ifstream::failure & e) {
+			std::cerr << "ERROR: (utls::readFile) Excetption error reading file " << path << '\n'
+								<< "Explanatory string: " << e.what() << '\n'
+								<< "Error code: " << e.code() << '\n';
 		}
 		f.close();
 		readBuf = str.c_str();
