@@ -2,7 +2,7 @@
  * Study of OpenGL guided by https://learnopengl.com
  *
  * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022
+ * 06/2022 - 07/2022
  */
 
 #include <iostream>
@@ -10,6 +10,10 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -30,7 +34,15 @@ const GLuint indices[] = {
 };
 
 int main(int argc, char ** argv, char ** eval) {
-	std::cout << "04-Textures\n";
+	std::cout << "05-Textures\n";
+
+	std::cout << "----- GLM demo -----\n";
+	glm::vec4 vec(1.f, 0.f, 0.f, 1.f);
+	glm::mat4 transform = glm::mat4(1.f); // identity matrix
+	transform = glm::translate(transform, glm::vec3(1.f, 1.f, 0.f));
+	vec = transform * vec;
+	std::cout << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "\n";
+	std::cout << "--------------------\n";
 
 	glfwInit();
 

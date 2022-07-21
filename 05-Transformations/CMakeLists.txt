@@ -26,3 +26,7 @@ add_subdirectory(lib/glad)
 target_include_directories(app PRIVATE ${GLAD_33_INCLUDE_DIR})
 target_link_libraries(app glad_33)
 
+# Setup GLM
+add_subdirectory(lib/glm)
+target_include_directories(app PRIVATE ${GLM_INCLUDE_DIR})
+
