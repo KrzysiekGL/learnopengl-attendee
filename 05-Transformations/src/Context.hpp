@@ -9,8 +9,8 @@
  *
  * Context class is not a wrapper for the whole GLFW library.
  *
- * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022
+ * 2022
+ * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
 
 #ifndef CONTEXT_HPP

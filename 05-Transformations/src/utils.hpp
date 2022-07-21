@@ -1,8 +1,8 @@
 /*
  * This header contains general purpose functions.
  *
- * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022
+ * 2022
+ * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
 
 #ifndef UTILS_HPP

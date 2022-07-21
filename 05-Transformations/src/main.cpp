@@ -1,8 +1,8 @@
 /*
  * Study of OpenGL guided by https://learnopengl.com
  *
- * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022 - 07/2022
+ * 2022
+ * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
 
 #include <iostream>
@@ -111,6 +111,7 @@ int main(int argc, char ** argv, char ** eval) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Free the image data (unsigned char *) memory
 	stbi_image_free(data);
+
 	// Bind default 2D texture
 	glBindTexture(GL_TEXTURE_2D, 0);
 	// Second Texture
