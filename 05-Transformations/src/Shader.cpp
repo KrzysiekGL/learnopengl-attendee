@@ -6,6 +6,9 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	assert(vertexPath!=NULL);
 	assert(fragmentPath!=NULL);
 
+	// Resource type
+	type = Resource::Type::Shader;
+
 	// Read sources from files
 	std::string vertexSource;
 	utls::readFile(vertexPath, vertexSource);
@@ -65,7 +68,6 @@ GLint Shader::activate() const {
 
 void Shader::deactivate() const {
 	// Just to be safe, make sure that the deactivating itself shader is acutally occupying OpenGL
-	//assert(occupantShaderID.load()==ID);
 	if(occupantShaderID.load()!=ID)
 		std::cerr << "Shader ID: " << ID << " is not active to be deactivated\n";
 	glUseProgram(0);
@@ -130,5 +132,13 @@ GLuint Shader::buildShader(std::string source, Type type) {
 	}
 
 	return shader;
+}
+
+void Shader::print(std::ostream & os) const {
+	os << "[type:Shader"
+		 << "|resID:"<< resID
+		 << "|OpenGL_ID:" << ID
+		 << "|name:" << friendlyName
+		 << "]";
 }
 

@@ -31,8 +31,9 @@
 #include <glad/glad.h>
 
 #include "utils.hpp"
+#include "Resource.hpp"
 
-class Shader {
+class Shader: public Resource {
 public:
 	// Create a shader program from given shaders source files
 	// Convention used:
@@ -45,6 +46,8 @@ public:
 	Shader & operator=(const Shader &) = delete;
 
 	// Try to activate this Shader and return 0 if succeeded.
+	// If the occupying Texture object is not using the same target (e.g. GL_TEXTURE_2D)
+	// then it's is safe to proceed.
 	// Thread safe, if couldn't activate, return ID of the currently activated.
 	GLint activate() const;
 	// Deactivate only if is activated
@@ -72,6 +75,9 @@ private:
 
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);
+
+	// Print information about this Shader using the level of deatils
+	virtual void print(std::ostream & os) const override;
 };
 
 #endif /* SHADER_HPP */
