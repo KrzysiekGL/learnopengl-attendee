@@ -1,4 +1,12 @@
 #include "utils.hpp"
+#include "random-words.hpp"
+
+void utls::initRandSeed() {
+	static std::atomic<bool> srandIssued = false;
+	bool expected = false;
+	if(srandIssued.compare_exchange_strong(expected, true))
+		srand(time(NULL));
+}
 
 void utls::readFile(std::string path, std::string & readBuf) {
 	std::ifstream f(path, std::ios::ate);
@@ -20,4 +28,16 @@ void utls::readFile(std::string path, std::string & readBuf) {
 	else
 		std::cerr << "ERROR: (utls::readFile) Error opening file: " << path << '\n';
 }
+
+std::string utls::randomName() {
+	initRandSeed();
+
+	std::string str;
+	str = randomAdjective[rand() % LIST_SIZE];
+	str += '-';
+	str += randomNoun[rand() % LIST_SIZE];
+
+	return str;
+}
+
 
