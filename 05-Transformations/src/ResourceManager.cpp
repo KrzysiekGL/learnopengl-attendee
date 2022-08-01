@@ -7,6 +7,8 @@ ResourceManager::ResourceManager(const char * name) {
 	this->type = Resource::Type::ResourceManager;
 	this->resID = 0;
 	this->friendlyName = name;
+	// Initialize the resources map with an empty element occupying resID 0
+	resources.insert(std::pair<u64, std::shared_ptr<Resource>>{0, NULL});
 }
 
 u64 ResourceManager::add(Resource * const res) {
@@ -33,7 +35,10 @@ u64 ResourceManager::add(Resource * const res) {
 }
 
 u64 ResourceManager::add(const char * name, Resource * const res) {
-	res->resID = 111;
+	// Generate Resource ID - take the ID of the latest element in the resources and increment it
+	auto res_latest = --(resources.end());
+	res->resID = (res_latest->first) + 1;
+
 	res->friendlyName = name;
 
 	const auto [it, success] = resources.insert(std::pair{res->resID, res});
