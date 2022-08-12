@@ -25,6 +25,10 @@
 
 #include <glad/glad.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "utils.hpp"
 #include "Resource.hpp"
 
@@ -44,9 +48,10 @@ public:
 	void activate() const { glUseProgram(ID); }
 
 	// Setters for uniforms in shaders
-	void setFloat(const char* uniformName, float value) const;
-	void setInt(const char* uniformName, int value) const;
-	void setBool(const char* uniformName, bool value) const;
+	void setFloat(const char * uniformName, float value) const;
+	void setInt(const char * uniformName, int value) const;
+	void setBool(const char * uniformName, bool value) const;
+	void setMat4(const char * uniformName, glm::mat4 & mat) const;
 
 	// Get OpenGL specific ID of this type of resource
 	GLuint getGLID() const { return ID; };

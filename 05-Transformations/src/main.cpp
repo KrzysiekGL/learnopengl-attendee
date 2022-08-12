@@ -37,13 +37,15 @@ const GLuint indices[] = {
 int main(int argc, char ** argv, char ** eval) {
 	std::cout << "05-Textures\n";
 
-	std::cout << "----- GLM demo -----\n";
-	glm::vec4 vec(1.f, 0.f, 0.f, 1.f);
-	glm::mat4 transform = glm::mat4(1.f); // identity matrix
-	transform = glm::translate(transform, glm::vec3(1.f, 1.f, 0.f));
-	vec = transform * vec;
-	std::cout << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "\n";
-	std::cout << "--------------------\n";
+	{
+		std::cout << "----- GLM demo -----\n";
+		glm::vec4 vec(1.f, 0.f, 0.f, 1.f);
+		glm::mat4 transform = glm::mat4(1.f); // identity matrix
+		transform = glm::translate(transform, glm::vec3(1.f, 1.f, 0.f));
+		vec = transform * vec;
+		std::cout << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "\n";
+		std::cout << "--------------------\n";
+	}
 
 	glfwInit();
 
@@ -97,9 +99,15 @@ int main(int argc, char ** argv, char ** eval) {
 	u64 tex2 = resMan.insert(new Texture("../texture/face.png", GL_TEXTURE_2D));
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
-	u64 shad1 = resMan.insert(new Shader("../shader/texture.vert", "../shader/texture.frag"));
+	u64 shad1 = resMan.insert(new Shader("../shader/transform.vert", "../shader/transform.frag"));
 	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture0", 0);
 	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture1", 1);
+	// -----------------------------------------------------------------------------------------------
+	// Transformations
+	glm::mat4 trans = glm::mat4(1.f);
+	trans = glm::rotate(trans, glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	trans = glm::scale(trans, glm::vec3(.5f, .5f, .5f));
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
@@ -108,6 +116,11 @@ int main(int argc, char ** argv, char ** eval) {
 		// Input & Context state
 		context.updateContextState();
 		context.processInput();
+
+		// Transformations in time
+		glm::mat4 trans = glm::mat4(1.f);
+		trans = glm::translate(trans, glm::vec3(.5f, -.5f, .0f));
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0f, .0f, 1.f));
 
 		// Rendering
 
@@ -122,6 +135,8 @@ int main(int argc, char ** argv, char ** eval) {
 		std::static_pointer_cast<Texture>(resMan.find(tex2))->activate();
 
 		std::static_pointer_cast<Shader>(resMan.find(shad1))->activate();
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
+
 		glBindVertexArray(VAO);
 
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);

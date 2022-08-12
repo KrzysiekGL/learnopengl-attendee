@@ -64,20 +64,25 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glDeleteShader(fragmentShader);
 }
 
-void Shader::setFloat(const char *uniformName, float value) const {
+void Shader::setFloat(const char * uniformName, float value) const {
 	activate();
 	glUniform1f(glGetUniformLocation(ID, uniformName), value);
 	}
 
-void Shader::setInt(const char *uniformName, int value) const {
+void Shader::setInt(const char * uniformName, int value) const {
 	activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), value);
 }
 
-void Shader::setBool(const char *uniformName, bool value) const {
+void Shader::setBool(const char * uniformName, bool value) const {
 	activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
 }
+
+void Shader::setMat4(const char * uniformName, glm::mat4 & mat) const {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, uniformName), 1, GL_FALSE, glm::value_ptr(mat));
+};
 
 GLuint Shader::buildShader(std::string source, Type type) {
 	// Create vertex shader object
