@@ -21,12 +21,16 @@ void utls::readFile(std::string path, std::string & readBuf) {
 			std::cerr << "ERROR: (utls::readFile) Excetption error reading file " << path << '\n'
 								<< "Explanatory string: " << e.what() << '\n'
 								<< "Error code: " << e.code() << '\n';
+			f.close();
+			throw;
 		}
 		f.close();
 		readBuf = str.c_str();
 	}
-	else
+	else {
 		std::cerr << "ERROR: (utls::readFile) Error opening file: " << path << '\n';
+		throw std::ios_base::failure("Error opening file\n");
+	}
 }
 
 std::string utls::randomName() {

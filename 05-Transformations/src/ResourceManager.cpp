@@ -11,7 +11,7 @@ ResourceManager::ResourceManager(const char * name) {
 	resources.insert(std::pair<u64, std::shared_ptr<Resource>>{0, NULL});
 }
 
-u64 ResourceManager::add(Resource * const res) {
+u64 ResourceManager::insert(Resource * const res) {
 	// Generate random name with a prefix specifying of what type is the new resource
 	std::string name;
 	switch(res->type) {
@@ -31,10 +31,14 @@ u64 ResourceManager::add(Resource * const res) {
 	}
 	name += utls::randomName();
 
-	return add(name.c_str(), res);
+	return insert(name.c_str(), res);
 }
 
-u64 ResourceManager::add(const char * name, Resource * const res) {
+u64 ResourceManager::insert(const char * name, Resource * const res) {
+	return insert(std::string(name), res);
+}
+
+u64 ResourceManager::insert(const std::string name, Resource * const res) {
 	// Generate Resource ID - take the ID of the latest element in the resources and increment it
 	auto res_latest = --(resources.end());
 	res->resID = (res_latest->first) + 1;
@@ -48,19 +52,25 @@ u64 ResourceManager::add(const char * name, Resource * const res) {
 	else return 0;
 }
 
-// Resource * ResourceManager::get(const char * name) {
-// 	for(const std::pair<u64, Resource *> & p : resources)
-// 		if(p.second->getFriendlyName().c_str() == name)
-// 			return p.second;
-// 	return NULL;
-// }
+// TODO: searching by name wil not work if there will be two the same named resources; fix it
+std::shared_ptr<Resource> ResourceManager::find(const char * name) {
+	return find(std::string(name));
+ }
 
-// Resource & ResourceManager::get(const u64 resID) {
-// 	std::pair<u64, Resource *> p = resources.find(resID);
-// 	if(p!=resources.end()) return *(p->second);
-// 	else return NULL;
-// }
+std::shared_ptr<Resource> ResourceManager::find(const std::string name) {
+	std::shared_ptr<Resource> res = NULL;
+	for(const auto & it : resources)
+		if(it.second!=NULL && it.second->friendlyName == name)
+			res = it.second;
+	return res;
+}
 
+std::shared_ptr<Resource> ResourceManager::find(const u64 resID) {
+	std::shared_ptr<Resource> res = NULL;
+	const auto it = resources.find(resID);
+	if(it!=resources.end()) res = it->second;
+	return res;
+}
 
 void ResourceManager::print(std::ostream & os) const {
 	os << "[type:ResourceManager"

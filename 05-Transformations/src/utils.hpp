@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <exception>
 
 namespace utls {
 	// Initialize random seed for the first and only time

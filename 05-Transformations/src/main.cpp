@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <memory>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -15,11 +16,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
+#include "ResourceManager.hpp"
+#include "Resource.hpp"
 #include "Context.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 const float vertices[] = {
 	// positions		// colors				// texture coordinates
@@ -45,6 +46,9 @@ int main(int argc, char ** argv, char ** eval) {
 	std::cout << "--------------------\n";
 
 	glfwInit();
+
+	// Main (for now single) Resource Manager
+	ResourceManager resMan;
 
 	Context context("learnopengl");
 	context.makeCurrent();
@@ -89,56 +93,13 @@ int main(int argc, char ** argv, char ** eval) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	// -----------------------------------------------------------------------------------------------
 	// 2D Texture
-	// Tell STBI (image lib) to flip images vertically (0.0 lands on the down-left corner instead of up-left)
-	stbi_set_flip_vertically_on_load(true);
-	// Create a texture object
-	GLuint texture1;
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	// Set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Loading an image/texture
-	GLint width, height, nrChannels;
-	const char * container = "../texture/container.jpg";
-	unsigned char * data = stbi_load(container, &width, &height, &nrChannels, 0);
-	if(data==NULL) std::cerr << "Image " << container << "  not loaded\n";
-	std::cout << width << " " << height << " " << nrChannels << std::endl;
-	// Generate texture (on the currently bound texture at the active texture unit)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	// Free the image data (unsigned char *) memory
-	stbi_image_free(data);
-
-	// Bind default 2D texture
-	glBindTexture(GL_TEXTURE_2D, 0);
-	// Second Texture
-	GLuint texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	const char * face = "../texture/face.png";
-	data = stbi_load(face, &width, &height, &nrChannels, 0);
-	if(data==NULL) std::cerr << "Image " << face << " not loaded\n";
-	std::cout << width << " " << height << " " << nrChannels << "\n";
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	stbi_image_free(data);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	u64 tex1 = resMan.insert(new Texture("../texture/container.jpg", GL_TEXTURE_2D));
+	u64 tex2 = resMan.insert(new Texture("../texture/face.png", GL_TEXTURE_2D));
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
-	Shader basic("../shader/texture.vert", "../shader/texture.frag");
-	basic.setInt("texture0", 0);
-	basic.setInt("texture1", 1);
+	u64 shad1 = resMan.insert(new Shader("../shader/texture.vert", "../shader/texture.frag"));
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture0", 0);
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture1", 1);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
@@ -153,20 +114,21 @@ int main(int argc, char ** argv, char ** eval) {
 		// Clrear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Render rectangle
+		// Render the rectangle
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		std::static_pointer_cast<Texture>(resMan.find(tex1))->activate();
 
-		basic.activate();
+		glActiveTexture(GL_TEXTURE1);
+		std::static_pointer_cast<Texture>(resMan.find(tex2))->activate();
+
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->activate();
 		glBindVertexArray(VAO);
 
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		basic.deactivate();
+		glUseProgram(0);
 
 		// Events & Swap buffers
 		context.swapBuffers();

@@ -11,11 +11,6 @@
  * - use a shader program
  * - set uniforms inside shaders
  *
- * Changes can be issued to the OpenGL state machine (glProgram domain)
- * by a thread only if `occupantShaderID` is set to *this* ID.
- * After a thread finishes it's job, it is obliged to set `occupantShaderID` to 0.
- * This is for thread safety reasons.
- *
  * 2022
  * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
@@ -45,20 +40,16 @@ public:
 	Shader(const Shader &) = delete;
 	Shader & operator=(const Shader &) = delete;
 
-	// Try to activate this Shader and return 0 if succeeded.
-	// If the occupying Texture object is not using the same target (e.g. GL_TEXTURE_2D)
-	// then it's is safe to proceed.
-	// Thread safe, if couldn't activate, return ID of the currently activated.
-	GLint activate() const;
-	// Deactivate only if is activated
-	void deactivate() const;
-	// Get ID of the currently activated shader program
-	static GLint currentlyActivated();
+	// Activate this Shader
+	void activate() const { glUseProgram(ID); }
 
 	// Setters for uniforms in shaders
 	void setFloat(const char* uniformName, float value) const;
 	void setInt(const char* uniformName, int value) const;
 	void setBool(const char* uniformName, bool value) const;
+
+	// Get OpenGL specific ID of this type of resource
+	GLuint getGLID() const { return ID; };
 
 private:
 	// Shader types enum
@@ -70,8 +61,9 @@ private:
 	// OpenGL object ID
 	GLuint ID;
 
-	// Thread safety
-	static std::atomic<GLuint> occupantShaderID;
+	// Shader info
+	std::string vertexPath;
+	std::string fragmentPath;
 
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);
