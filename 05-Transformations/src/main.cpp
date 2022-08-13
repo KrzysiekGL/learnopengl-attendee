@@ -122,6 +122,11 @@ int main(int argc, char ** argv, char ** eval) {
 		trans = glm::translate(trans, glm::vec3(.5f, -.5f, .0f));
 		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0f, .0f, 1.f));
 
+		glm::mat4 trans2 = glm::mat4(1.f);
+		trans2 = glm::translate(trans2, glm::vec3(-.5f, .5f, .0f));
+		float s = sin((float)glfwGetTime());
+		trans2 = glm::scale(trans2, glm::vec3(s, s, 1.f));
+
 		// Rendering
 
 		// Clrear color buffer
@@ -135,10 +140,13 @@ int main(int argc, char ** argv, char ** eval) {
 		std::static_pointer_cast<Texture>(resMan.find(tex2))->activate();
 
 		std::static_pointer_cast<Shader>(resMan.find(shad1))->activate();
-		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
 
 		glBindVertexArray(VAO);
 
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
+		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans2);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
