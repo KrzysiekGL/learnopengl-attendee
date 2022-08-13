@@ -1,11 +1,39 @@
 #include "Shader.hpp"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+	if(vertexPath==NULL)
+		throw std::ios_base::failure("vertexPath is NULL\n");
+	if(fragmentPath==NULL)
+		throw std::ios_base::failure("fragmentPath is NULL\n");
+
+	this->vertexPath = vertexPath;
+	this->fragmentPath = fragmentPath;
+
+	// Resource type
+	type = Resource::Type::Shader;
+
 	// Read sources from files
 	std::string vertexSource;
-	utls::readFile(vertexPath, vertexSource);
+	try {
+		utls::readFile(vertexPath, vertexSource);
+	}
+	catch(const std::ios_base::failure & e) {
+		std::cout << "Caught an std::ios_base::failure\n"
+							<< "Explanatory string: " << e.what() << '\n'
+							<< "Error code: " << e.code() << '\n';
+		throw;
+	}
+
 	std::string fragmentSource;
-	utls::readFile(fragmentPath, fragmentSource);
+	try {
+		utls::readFile(fragmentPath, fragmentSource);
+	}
+	catch(const std::ios_base::failure & e) {
+		std::cout << "Caught an std::ios_base::failure\n"
+							<< "Explanatory string: " << e.what() << '\n'
+							<< "Error code: " << e.code() << '\n';
+		throw;
+	}
 
 	// Compile shaders
 	GLuint vertexShader;
@@ -36,49 +64,25 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glDeleteShader(fragmentShader);
 }
 
-GLint Shader::activate() const {
-	GLint progID = currentlyActivated();
-
-	if(ID==progID)
-		return ID;
-
-	glUseProgram(ID);
-	return progID;
-}
-
-void Shader::deactivate() const {
-	GLint progID = currentlyActivated();
-
-	if(ID==progID)
-		glUseProgram(0);
-}
-
-GLint Shader::currentlyActivated() {
-	GLint progID;
-	glGetIntegerv(GL_CURRENT_PROGRAM, &progID);
-	return progID;
-}
-
-void Shader::setFloat(const char *uniformName, float value) const {
-	GLint prevProgID = this->activate();
+void Shader::setFloat(const char * uniformName, float value) const {
+	activate();
 	glUniform1f(glGetUniformLocation(ID, uniformName), value);
-	if(ID!=prevProgID)
-		glUseProgram(prevProgID);
-}
+	}
 
-void Shader::setInt(const char *uniformName, int value) const {
-	GLint prevProgID = this->activate();
+void Shader::setInt(const char * uniformName, int value) const {
+	activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), value);
-	if(ID!=prevProgID)
-		glUseProgram(prevProgID);
 }
 
-void Shader::setBool(const char *uniformName, bool value) const {
-	GLint prevProgID = this->activate();
+void Shader::setBool(const char * uniformName, bool value) const {
+	activate();
 	glUniform1i(glGetUniformLocation(ID, uniformName), (int)value);
-	if(ID!=prevProgID)
-		glUseProgram(prevProgID);
 }
+
+void Shader::setMat4(const char * uniformName, glm::mat4 & mat) const {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, uniformName), 1, GL_FALSE, glm::value_ptr(mat));
+};
 
 GLuint Shader::buildShader(std::string source, Type type) {
 	// Create vertex shader object
@@ -114,5 +118,15 @@ GLuint Shader::buildShader(std::string source, Type type) {
 	}
 
 	return shader;
+}
+
+void Shader::print(std::ostream & os) const {
+	os << "[type:Shader"
+		 << "|resID:"<< resID
+		 << "|name:" << friendlyName
+		 << "|OpenGL_ID:" << ID
+		 << "|vert path:" << vertexPath
+		 << "|frag path:" << fragmentPath
+		 << "]";
 }
 

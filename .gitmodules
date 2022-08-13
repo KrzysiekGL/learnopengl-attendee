@@ -1,3 +1,6 @@
 [submodule "01-Creating_a_window/lib/glfw"]
 	path = 01-Creating_a_window/lib/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "05-Transformations/lib/glm"]
+	path = 05-Transformations/lib/glm
+	url = https://github.com/g-truc/glm.git

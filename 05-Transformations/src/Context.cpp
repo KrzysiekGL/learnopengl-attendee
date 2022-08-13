@@ -1,6 +1,9 @@
 #include "Context.hpp"
 
 Context::Context(std::string windowName, int width, int height) {
+	// Resource type
+	//type = Resource::Type::
+
 	this->width = width;
 	this->height = height;
 

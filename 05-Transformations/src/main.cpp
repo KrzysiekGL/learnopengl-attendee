@@ -1,21 +1,26 @@
 /*
  * Study of OpenGL guided by https://learnopengl.com
  *
- * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022
+ * 2022
+ * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
 
 #include <iostream>
 #include <math.h>
+#include <memory>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
+#include "ResourceManager.hpp"
+#include "Resource.hpp"
 #include "Context.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 const float vertices[] = {
 	// positions		// colors				// texture coordinates
@@ -30,9 +35,22 @@ const GLuint indices[] = {
 };
 
 int main(int argc, char ** argv, char ** eval) {
-	std::cout << "04-Textures\n";
+	std::cout << "05-Textures\n";
+
+	{
+		std::cout << "----- GLM demo -----\n";
+		glm::vec4 vec(1.f, 0.f, 0.f, 1.f);
+		glm::mat4 transform = glm::mat4(1.f); // identity matrix
+		transform = glm::translate(transform, glm::vec3(1.f, 1.f, 0.f));
+		vec = transform * vec;
+		std::cout << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "\n";
+		std::cout << "--------------------\n";
+	}
 
 	glfwInit();
+
+	// Main (for now single) Resource Manager
+	ResourceManager resMan;
 
 	Context context("learnopengl");
 	context.makeCurrent();
@@ -77,55 +95,19 @@ int main(int argc, char ** argv, char ** eval) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	// -----------------------------------------------------------------------------------------------
 	// 2D Texture
-	// Tell STBI (image lib) to flip images vertically (0.0 lands on the down-left corner instead of up-left)
-	stbi_set_flip_vertically_on_load(true);
-	// Create a texture object
-	GLuint texture1;
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	// Set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Loading an image/texture
-	GLint width, height, nrChannels;
-	const char * container = "../texture/container.jpg";
-	unsigned char * data = stbi_load(container, &width, &height, &nrChannels, 0);
-	if(data==NULL) std::cerr << "Image " << container << "  not loaded\n";
-	std::cout << width << " " << height << " " << nrChannels << std::endl;
-	// Generate texture (on the currently bound texture at the active texture unit)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	// Free the image data (unsigned char *) memory
-	stbi_image_free(data);
-	// Bind default 2D texture
-	glBindTexture(GL_TEXTURE_2D, 0);
-	// Second Texture
-	GLuint texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	const char * face = "../texture/face.png";
-	data = stbi_load(face, &width, &height, &nrChannels, 0);
-	if(data==NULL) std::cerr << "Image " << face << " not loaded\n";
-	std::cout << width << " " << height << " " << nrChannels << "\n";
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	stbi_image_free(data);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	u64 tex1 = resMan.insert(new Texture("../texture/container.jpg", GL_TEXTURE_2D));
+	u64 tex2 = resMan.insert(new Texture("../texture/face.png", GL_TEXTURE_2D));
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
-	Shader basic("../shader/texture.vert", "../shader/texture.frag");
-	basic.setInt("texture0", 0);
-	basic.setInt("texture1", 1);
+	u64 shad1 = resMan.insert(new Shader("../shader/transform.vert", "../shader/transform.frag"));
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture0", 0);
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture1", 1);
+	// -----------------------------------------------------------------------------------------------
+	// Transformations
+	glm::mat4 trans = glm::mat4(1.f);
+	trans = glm::rotate(trans, glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	trans = glm::scale(trans, glm::vec3(.5f, .5f, .5f));
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
@@ -135,24 +117,41 @@ int main(int argc, char ** argv, char ** eval) {
 		context.updateContextState();
 		context.processInput();
 
+		// Transformations in time
+		glm::mat4 trans = glm::mat4(1.f);
+		trans = glm::translate(trans, glm::vec3(.5f, -.5f, .0f));
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0f, .0f, 1.f));
+
+		glm::mat4 trans2 = glm::mat4(1.f);
+		trans2 = glm::translate(trans2, glm::vec3(-.5f, .5f, .0f));
+		float s = sin((float)glfwGetTime());
+		trans2 = glm::scale(trans2, glm::vec3(s, s, 1.f));
+
 		// Rendering
 
 		// Clrear color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Render rectangle
+		// Render the rectangle
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		std::static_pointer_cast<Texture>(resMan.find(tex1))->activate();
 
-		basic.activate();
+		glActiveTexture(GL_TEXTURE1);
+		std::static_pointer_cast<Texture>(resMan.find(tex2))->activate();
+
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->activate();
+
 		glBindVertexArray(VAO);
 
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans2);
+		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		basic.deactivate();
+		glUseProgram(0);
 
 		// Events & Swap buffers
 		context.swapBuffers();

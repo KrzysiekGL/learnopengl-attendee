@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS_INIT "-Wall")
 
 # Set main project
 project(app VERSION 1.0)
@@ -25,4 +26,8 @@ target_link_libraries(app OpenGL::GL)
 add_subdirectory(lib/glad)
 target_include_directories(app PRIVATE ${GLAD_33_INCLUDE_DIR})
 target_link_libraries(app glad_33)
+
+# Setup GLM
+add_subdirectory(lib/glm)
+target_include_directories(app PRIVATE ${GLM_INCLUDE_DIR})
 

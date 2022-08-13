@@ -11,8 +11,8 @@
  * - use a shader program
  * - set uniforms inside shaders
  *
- * Author: KrzysiekGL webmaster@unexpectd.com
- * 06/2022
+ * 2022
+ * Author: KrzysiekGL webmaster@unexpectd.com; All rights reserved.
  */
 
 #ifndef SHADER_HPP
@@ -21,12 +21,18 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <atomic>
 
 #include <glad/glad.h>
 
-#include "utils.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-class Shader {
+#include "utils.hpp"
+#include "Resource.hpp"
+
+class Shader: public Resource {
 public:
 	// Create a shader program from given shaders source files
 	// Convention used:
@@ -35,20 +41,20 @@ public:
 	Shader(const char* vertexPath, const char* fragmentPath);
 
 	// Delete copy and assignment constructors
-	Shader (const Shader &) = delete;
+	Shader(const Shader &) = delete;
 	Shader & operator=(const Shader &) = delete;
 
-	// Activate and return ID of the previusly activated, if there was any (including 0)
-	GLint activate() const;
-	// Deactivate only if is activated
-	void deactivate() const;
-	// Get ID of the currently activated shader program
-	static GLint currentlyActivated();
+	// Activate this Shader
+	void activate() const { glUseProgram(ID); }
 
 	// Setters for uniforms in shaders
-	void setFloat(const char* uniformName, float value) const;
-	void setInt(const char* uniformName, int value) const;
-	void setBool(const char* uniformName, bool value) const;
+	void setFloat(const char * uniformName, float value) const;
+	void setInt(const char * uniformName, int value) const;
+	void setBool(const char * uniformName, bool value) const;
+	void setMat4(const char * uniformName, glm::mat4 & mat) const;
+
+	// Get OpenGL specific ID of this type of resource
+	GLuint getGLID() const { return ID; };
 
 private:
 	// Shader types enum
@@ -57,10 +63,18 @@ private:
 		Fragment
 	};
 
+	// OpenGL object ID
 	GLuint ID;
+
+	// Shader info
+	std::string vertexPath;
+	std::string fragmentPath;
 
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);
+
+	// Print information about this Shader using the level of deatils
+	virtual void print(std::ostream & os) const override;
 };
 
 #endif /* SHADER_HPP */
