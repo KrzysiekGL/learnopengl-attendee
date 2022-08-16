@@ -28,9 +28,9 @@ public:
 	ResourceManager & operator=(const ResourceManager &) = delete;
 
 	// Add a resrorce; return resID if success, otherwise return 0
-	u64 insert(Resource * const res);
-	u64 insert(const char * name, Resource * const res);
-	u64 insert(const std::string name, Resource * const res);
+	std::shared_ptr<Resource> insert(Resource * const res);
+	std::shared_ptr<Resource> insert(const char * name, Resource * const res);
+	std::shared_ptr<Resource> insert(const std::string name, Resource * const res);
 
 	// Get a resource; return reference to the object, otherwise reuturn NULL
 	std::shared_ptr<Resource> find(const std::string name);

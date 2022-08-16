@@ -16,6 +16,8 @@ typedef unsigned long long u64;
 
 class Resource {
 public:
+	virtual ~Resource() = default;
+
 	// Resource type
 	enum class Type {
 		ResourceManager,
