@@ -1,4 +1,5 @@
 #include "Context.hpp"
+#include "callbacks.hpp"
 
 Context::Context(std::string windowName, int width, int height) {
 	// Resource type
@@ -43,6 +44,7 @@ void Context::processInput() const {
 
 void Context::updateContextState() {
 	glfwGetWindowSize(window, &width, &height);
+	std::cout << "Context dimensions: " << width << " x " << height << '\n';
 }
 
 void Context::swapBuffers() const {
@@ -91,7 +93,7 @@ int Context::getNumAttributes() const {
 	return numAttribs;
 }
 
-void Context::pushViewport() const {
+void Context::pushViewport() {
 	clbck::framebufferSize(window, width, height);
 }
 

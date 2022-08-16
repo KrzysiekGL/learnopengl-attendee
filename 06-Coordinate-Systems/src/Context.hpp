@@ -22,8 +22,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "callbacks.hpp"
-
 class Context {
 public:
 	// Glfw context creation along with OpenGL initialization
@@ -54,6 +52,11 @@ public:
 	// Get supported maximum number of atributes for shaders
 	int getNumAttributes() const;
 
+	// Get context dimensions
+	int getWidth() const { return width; }
+	int getHeight() const { return height; }
+	float getRatio() const { return (float)width/(float)height; }
+
 private:
 	GLFWwindow * window;
 	int width;
@@ -62,7 +65,7 @@ private:
 	bool openglMapped = false;
 
 	// Push OpenGL viewport according to this context
-	void pushViewport() const;
+	void pushViewport();
 
 	// Push OpenGL background clear color
 	void pushBackgroundColor() const;

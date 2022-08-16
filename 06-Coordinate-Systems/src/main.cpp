@@ -22,30 +22,66 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 
-const float vertices[] = {
-	// positions		// colors				// texture coordinates
-   0.5f,	0.5f, 0.0f,		1.0f, 0.0f, 0.0f,		1.0f, 1.0f,		// top right
-	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,		1.0f, 0.0f,		// bottom right
-	-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,		0.0f, 0.0f,		// bottom left
-	-0.5f,	0.5f, 0.0f,		1.0f, 1.0f, 0.0f,		0.0f, 1.0f		// top left
+// Coordinates; Texture Coordinates
+float vertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-const GLuint indices[] = {
-	0, 1, 2,
-	2, 3, 0,
+
+glm::vec3 cubePositions[] = {
+	glm::vec3( 0.0f,  0.0f,  0.0f),
+	glm::vec3( 2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3( 2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,	3.0f, -7.5f),
+	glm::vec3( 1.3f, -2.0f, -2.5f),
+	glm::vec3( 1.5f,  2.0f, -2.5f),
+	glm::vec3( 1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
 int main(int argc, char ** argv, char ** eval) {
-	std::cout << "05-Textures\n";
-
-	{
-		std::cout << "----- GLM demo -----\n";
-		glm::vec4 vec(1.f, 0.f, 0.f, 1.f);
-		glm::mat4 transform = glm::mat4(1.f); // identity matrix
-		transform = glm::translate(transform, glm::vec3(1.f, 1.f, 0.f));
-		vec = transform * vec;
-		std::cout << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "\n";
-		std::cout << "--------------------\n";
-	}
+	std::cout << "06-Coordinate-Systems\n";
 
 	glfwInit();
 
@@ -69,22 +105,13 @@ int main(int argc, char ** argv, char ** eval) {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Element Buffer Object - combination of the VBO vertices to form a rectangle
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
 	// Linking Vertex Attributes
 	// aPos
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// aColor
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-	glEnableVertexAttribArray(1);
 	// aTexCoord
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// Bind to default buffers (VAO (!*), VBO, EBO)
 	// *VAO keeps track of the last bound EBO while the VAO is bound.
@@ -99,17 +126,27 @@ int main(int argc, char ** argv, char ** eval) {
 	u64 tex2 = resMan.insert(new Texture("../texture/face.png", GL_TEXTURE_2D));
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
-	u64 shad1 = resMan.insert(new Shader("../shader/transform.vert", "../shader/transform.frag"));
+	u64 shad1 = resMan.insert(new Shader("../shader/coordinates.vert", "../shader/coordinates.frag"));
 	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture0", 0);
 	std::static_pointer_cast<Shader>(resMan.find(shad1))->setInt("texture1", 1);
 	// -----------------------------------------------------------------------------------------------
-	// Transformations
-	glm::mat4 trans = glm::mat4(1.f);
-	trans = glm::rotate(trans, glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-	trans = glm::scale(trans, glm::vec3(.5f, .5f, .5f));
-	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
+	// 3D Transformations - all coordinate systems pipeline
+	glm::mat4 model = glm::mat4(1.f);
+	model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0, 0));
+
+	glm::mat4 view = glm::mat4(1.f);
+	view = glm::translate(view, glm::vec3(0, 0, -3.f));
+
+	glm::mat4 projection;
+	projection = glm::perspective(glm::radians(45.f), context.getRatio(), .1f, 100.f);
+
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("model", model);
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("view", view);
+	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("projection", projection);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
+
+	glEnable(GL_DEPTH_TEST);
 
 	// Game loop/Render loop
 	while(!context.shouldClose()) {
@@ -117,20 +154,10 @@ int main(int argc, char ** argv, char ** eval) {
 		context.updateContextState();
 		context.processInput();
 
-		// Transformations in time
-		glm::mat4 trans = glm::mat4(1.f);
-		trans = glm::translate(trans, glm::vec3(.5f, -.5f, .0f));
-		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0f, .0f, 1.f));
-
-		glm::mat4 trans2 = glm::mat4(1.f);
-		trans2 = glm::translate(trans2, glm::vec3(-.5f, .5f, .0f));
-		float s = sin((float)glfwGetTime());
-		trans2 = glm::scale(trans2, glm::vec3(s, s, 1.f));
-
 		// Rendering
 
 		// Clrear color buffer
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the rectangle
 		glActiveTexture(GL_TEXTURE0);
@@ -143,11 +170,20 @@ int main(int argc, char ** argv, char ** eval) {
 
 		glBindVertexArray(VAO);
 
-		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans);
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("view", view);
+		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("projection", projection);
 
-		std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("transform", trans2);
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		for(u64 i = 0; i<10; ++i) {
+			glm::mat4 model = glm::mat4(1.f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.f * i;
+			if(!(i%3))
+				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1, 0, 0));
+			else
+				model = glm::rotate(model, glm::radians(angle), glm::vec3(1, 0, 0));
+			std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
