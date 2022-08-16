@@ -44,7 +44,6 @@ void Context::processInput() const {
 
 void Context::updateContextState() {
 	glfwGetWindowSize(window, &width, &height);
-	std::cout << "Context dimensions: " << width << " x " << height << '\n';
 }
 
 void Context::swapBuffers() const {
@@ -104,5 +103,14 @@ void Context::pushBackgroundColor() const {
 	b = backgroundColor[2];
 	a = backgroundColor[3];
 	glClearColor(r, g, b, a);
+}
+
+void Context::print(std::ostream & os) const {
+	os << "[type:Context"
+		 << "|resID:" << resID
+		 << "|name:" << friendlyName
+		 << "|dimensions:" << width << "x" << height
+		 << "|attached_to_window:" << window
+		 << "]";
 }
 

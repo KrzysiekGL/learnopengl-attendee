@@ -22,7 +22,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class Context {
+#include "Resource.hpp"
+
+class Context: public Resource {
 public:
 	// Glfw context creation along with OpenGL initialization
 	Context(std::string windowName, int width = 800, int height = 600);
@@ -73,6 +75,8 @@ private:
 	// Map to the OpenGL function pointers with GLAD
 	void mapOpenGL();
 
+	// Print information about this Context
+	virtual void print(std::ostream & os) const override;
 };
 
 #endif /* CONTEXT_HPP */

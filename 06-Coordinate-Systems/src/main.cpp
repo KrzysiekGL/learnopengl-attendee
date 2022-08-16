@@ -88,8 +88,8 @@ int main(int argc, char ** argv, char ** eval) {
 	// Main (for now single) Resource Manager
 	ResourceManager resMan;
 
-	Context context("learnopengl");
-	context.makeCurrent();
+	u64 context = resMan.insert(new Context("learnopengl"));
+	std::static_pointer_cast<Context>(resMan.find(context))->makeCurrent();
 
 	// -----------------------------------------------------------------------------------------------
 	// Temp space for rendering stuff
@@ -138,7 +138,7 @@ int main(int argc, char ** argv, char ** eval) {
 	view = glm::translate(view, glm::vec3(0, 0, -3.f));
 
 	glm::mat4 projection;
-	projection = glm::perspective(glm::radians(45.f), context.getRatio(), .1f, 100.f);
+	projection = glm::perspective(glm::radians(45.f), std::static_pointer_cast<Context>(resMan.find(context))->getRatio(), .1f, 100.f);
 
 	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("model", model);
 	std::static_pointer_cast<Shader>(resMan.find(shad1))->setMat4("view", view);
@@ -149,10 +149,10 @@ int main(int argc, char ** argv, char ** eval) {
 	glEnable(GL_DEPTH_TEST);
 
 	// Game loop/Render loop
-	while(!context.shouldClose()) {
+	while(!(std::static_pointer_cast<Context>(resMan.find(context))->shouldClose())) {
 		// Input & Context state
-		context.updateContextState();
-		context.processInput();
+		std::static_pointer_cast<Context>(resMan.find(context))->updateContextState();
+		std::static_pointer_cast<Context>(resMan.find(context))->processInput();
 
 		// Rendering
 
@@ -190,7 +190,7 @@ int main(int argc, char ** argv, char ** eval) {
 		glUseProgram(0);
 
 		// Events & Swap buffers
-		context.swapBuffers();
+		std::static_pointer_cast<Context>(resMan.find(context))->swapBuffers();
 		glfwPollEvents();
 	}
 

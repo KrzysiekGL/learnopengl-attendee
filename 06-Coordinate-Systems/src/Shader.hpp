@@ -73,7 +73,7 @@ private:
 	// Create and complie a shader
 	GLuint buildShader(std::string source, Type type);
 
-	// Print information about this Shader using the level of deatils
+	// Print information about this Shader
 	virtual void print(std::ostream & os) const override;
 };
 
