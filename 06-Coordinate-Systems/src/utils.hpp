@@ -15,6 +15,10 @@
 #include <fstream>
 #include <sstream>
 #include <exception>
+#include <memory>
+
+// static pointer downcast a weak_ptr::lock to a T class
+#define UTLS_WSCAST(T, weak) (std::static_pointer_cast<T>((weak).lock()))
 
 namespace utls {
 	// Initialize random seed for the first and only time

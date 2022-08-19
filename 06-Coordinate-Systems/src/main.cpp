@@ -21,6 +21,7 @@
 #include "Context.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "utils.hpp"
 
 // Coordinates; Texture Coordinates
 float vertices[] = {
@@ -89,7 +90,7 @@ int main(int argc, char ** argv, char ** eval) {
 	ResourceManager resMan;
 
 	std::weak_ptr<Resource> context = resMan.insert(new Context("learnopengl"));
-	std::static_pointer_cast<Context>(context.lock())->makeCurrent();
+	UTLS_WSCAST(Context, context)->makeCurrent();
 
 	// -----------------------------------------------------------------------------------------------
 	// Temp space for rendering stuff
@@ -130,8 +131,8 @@ int main(int argc, char ** argv, char ** eval) {
 	std::weak_ptr<Resource> shad1 = resMan.insert(new Shader("../shader/coordinates.vert",
 																												 "../shader/coordinates.frag"));
 
-	std::static_pointer_cast<Shader>(shad1.lock())->setInt("texture0", 0);
-	std::static_pointer_cast<Shader>(shad1.lock())->setInt("texture1", 1);
+	UTLS_WSCAST(Shader, shad1)->setInt("texture0", 0);
+	UTLS_WSCAST(Shader, shad1)->setInt("texture1", 1);
 	// -----------------------------------------------------------------------------------------------
 	// 3D Transformations - all coordinate systems pipeline
 	glm::mat4 model = glm::mat4(1.f);
@@ -141,23 +142,21 @@ int main(int argc, char ** argv, char ** eval) {
 	view = glm::translate(view, glm::vec3(0, 0, -3.f));
 
 	glm::mat4 projection;
-	projection = glm::perspective(glm::radians(45.f),
-																std::static_pointer_cast<Context>(context.lock())->getRatio(),
-																.1f, 100.f);
+	projection = glm::perspective(glm::radians(45.f), UTLS_WSCAST(Context, context)->getRatio(), .1f, 100.f);
 
-	std::static_pointer_cast<Shader>(shad1.lock())->setMat4("model", model);
-	std::static_pointer_cast<Shader>(shad1.lock())->setMat4("view", view);
-	std::static_pointer_cast<Shader>(shad1.lock())->setMat4("projection", projection);
+	UTLS_WSCAST(Shader, shad1)->setMat4("model", model);
+	UTLS_WSCAST(Shader, shad1)->setMat4("view", view);
+	UTLS_WSCAST(Shader, shad1)->setMat4("projection", projection);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
 	glEnable(GL_DEPTH_TEST);
 
 	// Game loop/Render loop
-	while(!std::static_pointer_cast<Context>(context.lock())->shouldClose()) {
+	while(!UTLS_WSCAST(Context, context)->shouldClose()) {
 		// Input & Context state
-		std::static_pointer_cast<Context>(context.lock())->updateContextState();
-		std::static_pointer_cast<Context>(context.lock())->processInput();
+		UTLS_WSCAST(Context, context)->updateContextState();
+		UTLS_WSCAST(Context, context)->processInput();
 
 		// Rendering
 
@@ -166,17 +165,17 @@ int main(int argc, char ** argv, char ** eval) {
 
 		// Render the rectangle
 		glActiveTexture(GL_TEXTURE0);
-		std::static_pointer_cast<Texture>(tex1.lock())->activate();
+		UTLS_WSCAST(Texture, tex1)->activate();
 
 		glActiveTexture(GL_TEXTURE1);
-		std::static_pointer_cast<Texture>(tex2.lock())->activate();
+		UTLS_WSCAST(Texture, tex2)->activate();
 
-		std::static_pointer_cast<Shader>(shad1.lock())->activate();
+		UTLS_WSCAST(Shader, shad1)->activate();
 
 		glBindVertexArray(VAO);
 
-		std::static_pointer_cast<Shader>(shad1.lock())->setMat4("view", view);
-		std::static_pointer_cast<Shader>(shad1.lock())->setMat4("projection", projection);
+		UTLS_WSCAST(Shader, shad1)->setMat4("view", view);
+		UTLS_WSCAST(Shader, shad1)->setMat4("projection", projection);
 
 		for(u64 i = 0; i<10; ++i) {
 			glm::mat4 model = glm::mat4(1.f);
@@ -186,7 +185,7 @@ int main(int argc, char ** argv, char ** eval) {
 				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1, 0, 0));
 			else
 				model = glm::rotate(model, glm::radians(angle), glm::vec3(1, 0, 0));
-			std::static_pointer_cast<Shader>(shad1.lock())->setMat4("model", model);
+			UTLS_WSCAST(Shader, shad1)->setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
