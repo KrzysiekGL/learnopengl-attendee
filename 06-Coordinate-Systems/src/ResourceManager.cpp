@@ -11,7 +11,7 @@ ResourceManager::ResourceManager(const char * name) {
 	resources.insert(std::pair<u64, std::shared_ptr<Resource>>{0, NULL});
 }
 
-std::shared_ptr<Resource> ResourceManager::insert(Resource * const res) {
+std::weak_ptr<Resource> ResourceManager::insert(Resource * const res) {
 	// Generate random name with a prefix specifying of what type is the new resource
 	std::string name;
 	switch(res->type) {
@@ -34,11 +34,11 @@ std::shared_ptr<Resource> ResourceManager::insert(Resource * const res) {
 	return insert(name.c_str(), res);
 }
 
-std::shared_ptr<Resource> ResourceManager::insert(const char * name, Resource * const res) {
+std::weak_ptr<Resource> ResourceManager::insert(const char * name, Resource * const res) {
 	return insert(std::string(name), res);
 }
 
-std::shared_ptr<Resource> ResourceManager::insert(const std::string name, Resource * const res) {
+std::weak_ptr<Resource> ResourceManager::insert(const std::string name, Resource * const res) {
 	// Generate Resource ID - take the ID of the latest element in the resources and increment it
 	auto res_latest = --(resources.end());
 	res->resID = (res_latest->first) + 1;
@@ -49,25 +49,25 @@ std::shared_ptr<Resource> ResourceManager::insert(const std::string name, Resour
 	std::cout << "Insertion of " << *(it->second) << (success ? " succeeded\n" : " failed\n");
 
 	if(success) return it->second;
-	else return NULL;
+	else return std::weak_ptr<Resource>();
 }
 
 // TODO: searching by name wil not work if there will be two the same named resources; fix it
-std::shared_ptr<Resource> ResourceManager::find(const char * name) {
+std::weak_ptr<Resource> ResourceManager::find(const char * name) {
 	return find(std::string(name));
  }
 
-std::shared_ptr<Resource> ResourceManager::find(const std::string name) {
+std::weak_ptr<Resource> ResourceManager::find(const std::string name) {
 	for(const auto & it : resources)
 		if(it.second!=NULL && it.second->friendlyName == name)
 			return it.second;
-	return NULL;
+	return std::weak_ptr<Resource>();
 }
 
-std::shared_ptr<Resource> ResourceManager::find(const u64 resID) {
+std::weak_ptr<Resource> ResourceManager::find(const u64 resID) {
 	const auto it = resources.find(resID);
 	if(it!=resources.end()) return it->second;
-	return NULL;
+	return std::weak_ptr<Resource>();
 }
 
 void ResourceManager::print(std::ostream & os) const {

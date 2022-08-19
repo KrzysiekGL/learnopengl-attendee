@@ -88,9 +88,8 @@ int main(int argc, char ** argv, char ** eval) {
 	// Main (for now single) Resource Manager
 	ResourceManager resMan;
 
-	std::shared_ptr<Context> context =
-		std::static_pointer_cast<Context>(resMan.insert(new Context("learnopengl")));
-	context->makeCurrent();
+	std::weak_ptr<Resource> context = resMan.insert(new Context("learnopengl"));
+	std::static_pointer_cast<Context>(context.lock())->makeCurrent();
 
 	// -----------------------------------------------------------------------------------------------
 	// Temp space for rendering stuff
@@ -123,18 +122,16 @@ int main(int argc, char ** argv, char ** eval) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	// -----------------------------------------------------------------------------------------------
 	// 2D Texture
-	std::shared_ptr<Texture> tex1 =
-		std::static_pointer_cast<Texture>(resMan.insert(new Texture("../texture/container.jpg", GL_TEXTURE_2D)));
+	std::weak_ptr<Resource> tex1 = resMan.insert(new Texture("../texture/container.jpg", GL_TEXTURE_2D));
 
-	std::shared_ptr<Texture> tex2 =
-		std::static_pointer_cast<Texture>(resMan.insert(new Texture("../texture/face.png", GL_TEXTURE_2D)));
+	std::weak_ptr<Resource> tex2 = resMan.insert(new Texture("../texture/face.png", GL_TEXTURE_2D));
 	// -----------------------------------------------------------------------------------------------
 	// Shader program
-	std::shared_ptr<Shader> shad1 =
-		std::static_pointer_cast<Shader>(resMan.insert(new Shader("../shader/coordinates.vert", "../shader/coordinates.frag")));
+	std::weak_ptr<Resource> shad1 = resMan.insert(new Shader("../shader/coordinates.vert",
+																												 "../shader/coordinates.frag"));
 
-	shad1->setInt("texture0", 0);
-	shad1->setInt("texture1", 1);
+	std::static_pointer_cast<Shader>(shad1.lock())->setInt("texture0", 0);
+	std::static_pointer_cast<Shader>(shad1.lock())->setInt("texture1", 1);
 	// -----------------------------------------------------------------------------------------------
 	// 3D Transformations - all coordinate systems pipeline
 	glm::mat4 model = glm::mat4(1.f);
@@ -144,21 +141,23 @@ int main(int argc, char ** argv, char ** eval) {
 	view = glm::translate(view, glm::vec3(0, 0, -3.f));
 
 	glm::mat4 projection;
-	projection = glm::perspective(glm::radians(45.f), context->getRatio(), .1f, 100.f);
+	projection = glm::perspective(glm::radians(45.f),
+																std::static_pointer_cast<Context>(context.lock())->getRatio(),
+																.1f, 100.f);
 
-	shad1->setMat4("model", model);
-	shad1->setMat4("view", view);
-	shad1->setMat4("projection", projection);
+	std::static_pointer_cast<Shader>(shad1.lock())->setMat4("model", model);
+	std::static_pointer_cast<Shader>(shad1.lock())->setMat4("view", view);
+	std::static_pointer_cast<Shader>(shad1.lock())->setMat4("projection", projection);
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
 	glEnable(GL_DEPTH_TEST);
 
 	// Game loop/Render loop
-	while(!context->shouldClose()) {
+	while(!std::static_pointer_cast<Context>(context.lock())->shouldClose()) {
 		// Input & Context state
-		context->updateContextState();
-		context->processInput();
+		std::static_pointer_cast<Context>(context.lock())->updateContextState();
+		std::static_pointer_cast<Context>(context.lock())->processInput();
 
 		// Rendering
 
@@ -167,17 +166,17 @@ int main(int argc, char ** argv, char ** eval) {
 
 		// Render the rectangle
 		glActiveTexture(GL_TEXTURE0);
-		tex1->activate();
+		std::static_pointer_cast<Texture>(tex1.lock())->activate();
 
 		glActiveTexture(GL_TEXTURE1);
-		tex2->activate();
+		std::static_pointer_cast<Texture>(tex2.lock())->activate();
 
-		shad1->activate();
+		std::static_pointer_cast<Shader>(shad1.lock())->activate();
 
 		glBindVertexArray(VAO);
 
-		shad1->setMat4("view", view);
-		shad1->setMat4("projection", projection);
+		std::static_pointer_cast<Shader>(shad1.lock())->setMat4("view", view);
+		std::static_pointer_cast<Shader>(shad1.lock())->setMat4("projection", projection);
 
 		for(u64 i = 0; i<10; ++i) {
 			glm::mat4 model = glm::mat4(1.f);
@@ -187,7 +186,7 @@ int main(int argc, char ** argv, char ** eval) {
 				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1, 0, 0));
 			else
 				model = glm::rotate(model, glm::radians(angle), glm::vec3(1, 0, 0));
-			shad1->setMat4("model", model);
+			std::static_pointer_cast<Shader>(shad1.lock())->setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
@@ -196,7 +195,7 @@ int main(int argc, char ** argv, char ** eval) {
 		glUseProgram(0);
 
 		// Events & Swap buffers
-		context->swapBuffers();
+		std::static_pointer_cast<Context>(context.lock())->swapBuffers();
 		glfwPollEvents();
 	}
 

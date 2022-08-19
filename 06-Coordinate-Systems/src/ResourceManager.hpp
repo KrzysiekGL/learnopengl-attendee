@@ -28,14 +28,14 @@ public:
 	ResourceManager & operator=(const ResourceManager &) = delete;
 
 	// Add a resrorce; return resID if success, otherwise return 0
-	std::shared_ptr<Resource> insert(Resource * const res);
-	std::shared_ptr<Resource> insert(const char * name, Resource * const res);
-	std::shared_ptr<Resource> insert(const std::string name, Resource * const res);
+	std::weak_ptr<Resource> insert(Resource * const res);
+	std::weak_ptr<Resource> insert(const char * name, Resource * const res);
+	std::weak_ptr<Resource> insert(const std::string name, Resource * const res);
 
 	// Get a resource; return reference to the object, otherwise reuturn NULL
-	std::shared_ptr<Resource> find(const std::string name);
-	std::shared_ptr<Resource> find(const char * name);
-	std::shared_ptr<Resource> find(const u64 resID);
+	std::weak_ptr<Resource> find(const std::string name);
+	std::weak_ptr<Resource> find(const char * name);
+	std::weak_ptr<Resource> find(const u64 resID);
 
 private:
 	std::map<u64, std::shared_ptr<Resource>> resources;
