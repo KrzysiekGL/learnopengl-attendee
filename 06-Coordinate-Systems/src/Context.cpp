@@ -1,6 +1,8 @@
 #include "Context.hpp"
 #include "callbacks.hpp"
 
+#include <glm/glm.hpp>
+
 Context::Context(std::string windowName, int width, int height) {
 	// Resource type
 	type = Resource::Type::Context;
@@ -37,9 +39,27 @@ bool Context::shouldClose() const {
 	return glfwWindowShouldClose(window);
 }
 
-void Context::processInput() const {
+void Context::processInput(const std::shared_ptr<Camera> camera, const float timeDelta) const {
+	// Turn off the context
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	// the camera movement
+	const float camSpeed = timeDelta * camera->getSpeed();
+	glm::vec3 camPos = camera->getPosition();
+	glm::vec3 camRevereseDirection = camera->getReverseDirection();
+	glm::vec3 camRight = camera->getRight();
+
+	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camPos -= camSpeed * camRevereseDirection;
+	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camPos += camSpeed * camRevereseDirection;
+	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camPos -= camSpeed * camRight;
+	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camPos += camSpeed * camRight;
+
+	camera->setPosition(camPos);
 }
 
 void Context::updateContextState() {

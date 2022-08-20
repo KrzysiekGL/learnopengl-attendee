@@ -151,11 +151,21 @@ int main(int argc, char ** argv, char ** eval) {
 
 	glEnable(GL_DEPTH_TEST);
 
+	// Time delta for movement/animation
+	float timeDelta = 0.f;
+	float lastFrameTime = 0.f;
+	float currentTime = 0.f;
+
 	// Game loop/Render loop
 	while(!UTLS_WSCAST(Context, context)->shouldClose()) {
+		// Time
+		currentTime = glfwGetTime();
+		timeDelta = currentTime - lastFrameTime;
+		lastFrameTime = currentTime;
+
 		// Input & Context state
 		UTLS_WSCAST(Context, context)->updateContextState();
-		UTLS_WSCAST(Context, context)->processInput();
+		UTLS_WSCAST(Context, context)->processInput(UTLS_WSCAST(Camera, cam), timeDelta);
 
 		// Rendering
 

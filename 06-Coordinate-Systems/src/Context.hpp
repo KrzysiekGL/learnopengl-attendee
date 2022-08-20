@@ -23,6 +23,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Resource.hpp"
+#include "Camera.hpp"
 
 class Context: public Resource {
 public:
@@ -37,7 +38,7 @@ public:
 	bool shouldClose() const;
 
 	// Process input from the game loop (may be changed in the future)
-	void processInput() const;
+	void processInput(const std::shared_ptr<Camera> camera, const float timeDelta) const;
 
 	// Updates width & height of the context
 	void updateContextState();

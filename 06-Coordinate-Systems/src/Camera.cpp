@@ -7,7 +7,8 @@ const glm::vec3 Camera::worldUp = glm::vec3(0.f, 1.f, 0.f);
 Camera::Camera(glm::vec3 initialPosition,
 							 glm::vec3 initialTarget) :
 	position(initialPosition),
-	target(initialTarget)
+	target(initialTarget),
+	speed(10.f)
 {
 	// Resource type
 	type = Resource::Type::Camera;

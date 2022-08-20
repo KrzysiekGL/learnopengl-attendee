@@ -42,6 +42,9 @@ protected:
 
 	virtual void print(std::ostream & os) const = 0;
 
+	// Freindship declaration with the Resourcemanager class
+	// so that an Resourcemanager object could manipulate private
+	// data of an Resource object
 	friend class ResourceManager;
 };
 
