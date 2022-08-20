@@ -12,7 +12,7 @@
 #include <string>
 #include <memory>
 
-typedef unsigned long long u64;
+#include "utils.hpp"
 
 class Resource {
 public:

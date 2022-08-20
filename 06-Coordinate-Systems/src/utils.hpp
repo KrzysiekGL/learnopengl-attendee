@@ -20,6 +20,8 @@
 // static pointer downcast a weak_ptr::lock to a T class
 #define UTLS_WSCAST(T, weak) (std::static_pointer_cast<T>((weak).lock()))
 
+typedef unsigned long long u64;
+
 namespace utls {
 	// Initialize random seed for the first and only time
 	void initRandSeed();
