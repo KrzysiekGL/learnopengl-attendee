@@ -3,7 +3,7 @@
 
 Context::Context(std::string windowName, int width, int height) {
 	// Resource type
-	//type = Resource::Type::
+	type = Resource::Type::Context;
 
 	this->width = width;
 	this->height = height;

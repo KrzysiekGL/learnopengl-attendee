@@ -21,6 +21,7 @@
 #include "Context.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "Camera.hpp"
 #include "utils.hpp"
 
 // Coordinates; Texture Coordinates
@@ -138,15 +139,13 @@ int main(int argc, char ** argv, char ** eval) {
 	glm::mat4 model = glm::mat4(1.f);
 	model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0, 0));
 
-	glm::mat4 view = glm::mat4(1.f);
-	view = glm::translate(view, glm::vec3(0, 0, -3.f));
-
 	glm::mat4 projection;
 	projection = glm::perspective(glm::radians(45.f), UTLS_WSCAST(Context, context)->getRatio(), .1f, 100.f);
 
 	UTLS_WSCAST(Shader, shad1)->setMat4("model", model);
-	UTLS_WSCAST(Shader, shad1)->setMat4("view", view);
 	UTLS_WSCAST(Shader, shad1)->setMat4("projection", projection);
+
+	std::weak_ptr<Resource> cam = resMan.insert(new Camera(glm::vec3(0, 0, 3.f)));
 	// End of temp space for rendering stuff
 	// -----------------------------------------------------------------------------------------------
 
@@ -173,6 +172,8 @@ int main(int argc, char ** argv, char ** eval) {
 		UTLS_WSCAST(Shader, shad1)->activate();
 
 		glBindVertexArray(VAO);
+
+		glm::mat4 view = UTLS_WSCAST(Camera, cam)->getLookAt();
 
 		UTLS_WSCAST(Shader, shad1)->setMat4("view", view);
 		UTLS_WSCAST(Shader, shad1)->setMat4("projection", projection);

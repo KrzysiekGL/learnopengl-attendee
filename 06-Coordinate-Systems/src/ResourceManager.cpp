@@ -26,6 +26,10 @@ std::weak_ptr<Resource> ResourceManager::insert(Resource * const res) {
 		break;
 	case Resource::Type::Context:
 		name = "Context-";
+		break;
+	case Resource::Type::Camera:
+		name = "Camera-";
+		break;
 	default:
 		name = "Unknown-";
 	}

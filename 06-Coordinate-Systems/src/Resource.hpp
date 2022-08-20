@@ -23,7 +23,8 @@ public:
 		ResourceManager,
 		Shader,
 		Texture,
-		Context
+		Context,
+		Camera
 	};
 
 	// Print information about a resource
