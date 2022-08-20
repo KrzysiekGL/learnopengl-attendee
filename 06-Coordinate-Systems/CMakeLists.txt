@@ -27,6 +27,9 @@ add_subdirectory(lib/glad)
 target_include_directories(app PRIVATE ${GLAD_33_INCLUDE_DIR})
 target_link_libraries(app glad_33)
 
+# Setup STB
+target_include_directories(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/stb)
+
 # Setup GLM
 target_include_directories(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/glm)
 
