@@ -28,6 +28,5 @@ target_include_directories(app PRIVATE ${GLAD_33_INCLUDE_DIR})
 target_link_libraries(app glad_33)
 
 # Setup GLM
-add_subdirectory(lib/glm)
-target_include_directories(app PRIVATE ${GLM_INCLUDE_DIR})
+target_include_directories(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/glm)
 
